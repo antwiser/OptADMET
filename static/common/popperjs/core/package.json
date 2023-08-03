@@ -1,0 +1,183 @@
+{
+  "_args": [
+    [
+      "@popperjs/core",
+      "/home/antin"
+    ]
+  ],
+  "_from": "@popperjs/core@latest",
+  "_hasShrinkwrap": false,
+  "_id": "@popperjs/core@2.9.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/@popperjs/core",
+  "_nodeVersion": "12.21.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/core_2.9.1_1615219198914_0.9659214633725703"
+  },
+  "_npmUser": {
+    "email": "federico.zivolo@gmail.com",
+    "name": "fezvrasta"
+  },
+  "_npmVersion": "6.14.11",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "@popperjs/core",
+    "raw": "@popperjs/core",
+    "rawSpec": "",
+    "scope": "@popperjs",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/tippy.js"
+  ],
+  "_resolved": "https://registry.npmjs.org/@popperjs/core/-/core-2.9.1.tgz",
+  "_shasum": "7f554e7368c9ab679a11f4a042ca17149d70cf12",
+  "_shrinkwrap": null,
+  "_spec": "@popperjs/core",
+  "_where": "/home/antin",
+  "author": {
+    "email": "federico.zivolo@gmail.com",
+    "name": "Federico Zivolo"
+  },
+  "babel": {
+    "extends": "./.config/babel.config"
+  },
+  "bugs": {
+    "url": "https://github.com/popperjs/popper-core/issues"
+  },
+  "dependencies": {},
+  "description": "Tooltip and Popover Positioning Engine",
+  "devDependencies": {
+    "@ampproject/rollup-plugin-closure-compiler": "^0.26.0",
+    "@atomico/rollup-plugin-sizes": "^1.1.4",
+    "@babel/cli": "^7.12.17",
+    "@babel/core": "^7.12.17",
+    "@babel/plugin-transform-flow-strip-types": "^7.12.13",
+    "@babel/plugin-transform-runtime": "^7.12.17",
+    "@babel/preset-env": "^7.12.17",
+    "@fezvrasta/tsc-silent": "^1.3.0",
+    "@khanacademy/flow-to-ts": "^0.3.0",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-replace": "^2.3.4",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^26.6.3",
+    "babel-plugin-add-import-extension": "^1.4.4",
+    "babel-plugin-annotate-pure-calls": "^0.4.0",
+    "babel-plugin-dev-expression": "^0.2.2",
+    "babel-plugin-inline-replace-variables": "^1.3.1",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.3",
+    "concurrently": "^5.3.0",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.20.0",
+    "eslint-plugin-flowtype": "^5.2.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-unused-imports": "^1.1.0",
+    "flow-bin": "^0.139.0",
+    "flow-copy-source": "^2.0.9",
+    "get-port-cli": "^2.0.0",
+    "husky": "^5.0.9",
+    "jest": "^26.6.3",
+    "jest-environment-jsdom-sixteen": "^1.0.3",
+    "jest-environment-puppeteer": "^4.4.0",
+    "jest-image-snapshot": "^4.3.0",
+    "jest-puppeteer": "^4.4.0",
+    "pinst": "^2.1.4",
+    "poster": "^0.0.9",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0",
+    "puppeteer": "^7.1.0",
+    "replace-in-files-cli": "^1.0.0",
+    "rollup": "^2.39.0",
+    "rollup-plugin-flow-entry": "^0.3.3",
+    "rollup-plugin-license": "^2.2.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-visualizer": "^4.2.0",
+    "serve": "^11.3.2",
+    "typescript": "^4.1.5"
+  },
+  "directories": {},
+  "dist": {
+    "fileCount": 272,
+    "integrity": "sha512-DvJbbn3dUgMxDnJLH+RZQPnXak1h4ZVYQ7CWiFWjQwBFkVajT4rfw2PdpHLTSTwxrYfnoEXkuBiwkDm6tPMQeA==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgRkn/CRA9TVsSAnZWagAAcvEP/RtyKyEt0drbS/MyeNLd\n1JD79vg3oBdwiiGu6/2aDXfBK0+7T0zrDRwFCqVrE6WxBVxtWn8HujL81Xqd\nYWZZ11pduk08cp7mHGjykky3PtMkzYYlBfY2SdMoLIKv9NGPNvw9OFvw45qz\nrMhOgLgB8MnvQ995oBJCGijya2pSmbMj6LrLutKk1y6Hg0+Uoc9x5O4aYGjo\nvCg9NX4Mgo2Paf9LyqGs3SZCThpHvoEvWEcFq6ZLPYZa8MvMJZ+KcM2nrqQr\n+8Nq0yAm3ngx3JZFK+uNsglb/blJmXIqRJl3EJuytAUkVC5NupxtEkOPtvQh\nkoVtt5AVBBf5CHAjbQYxfZXFKM18FapwFmtQt1dU6TJdgJQz/FayzvvygEXo\nrWJVF15t2nVPK35PICRJNzFDHvyBsKHJKwHy9+kthX4TDVeEpBa7BWMSpRPM\noKshKLDdrdX5aOkZLQt2PnLxiN2hxv+hh60/a5BlshurcqT0I2DyU8fLn5/v\nHjfFQ0jlZ68A+Ppszk4Ak2IJoElNlRixr+053lPitCtwfT+HT+7JXg9IH1KS\nUIHjqRhkwWTBEx/yVRqYdx+zcO/X5+LJaXpWaZotaelc0Mbcq2CAB6aJRrtD\nDtefTOg2gV2n9hnngxUYuOfX4Yn6m79XtNR8UVwS1NAsw9NrajnbaGY7hKgs\nIBet\r\n=CBXs\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "7f554e7368c9ab679a11f4a042ca17149d70cf12",
+    "tarball": "https://registry.npmjs.org/@popperjs/core/-/core-2.9.1.tgz",
+    "unpackedSize": 1495979
+  },
+  "eslintConfig": {
+    "extends": "./.config/eslint.config"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/popperjs"
+  },
+  "gitHead": "c3c52a868ead8ecbe7885f248b152374db83c1c2",
+  "homepage": "https://github.com/popperjs/popper-core#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "jest": {
+    "preset": "./.config/jest.config"
+  },
+  "keywords": [
+    "dropdown",
+    "popover",
+    "popper",
+    "popup",
+    "positioning engine",
+    "tooltip"
+  ],
+  "license": "MIT",
+  "main": "dist/cjs/popper.js",
+  "main:umd": "dist/umd/popper.js",
+  "maintainers": [
+    {
+      "name": "fezvrasta",
+      "email": "federico.zivolo@gmail.com"
+    }
+  ],
+  "module": "lib/index.js",
+  "name": "@popperjs/core",
+  "optionalDependencies": {},
+  "prettier": {
+    "proseWrap": "always",
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/popperjs/popper-core.git"
+  },
+  "scripts": {
+    "_postinstall": "husky install .config/husky",
+    "build": "yarn clean && yarn build:es && yarn build:esbrowser && yarn build:bundles && yarn build:flow && yarn build:typescript",
+    "build:bundles": "rollup -c .config/rollup.config.js",
+    "build:dev": "NODE_ENV=dev babel src -d tests/visual/dist",
+    "build:es": "babel src -d lib --ignore '**/*.test.js','**/__mocks__'",
+    "build:esbrowser": "BROWSER_COMPAT=true yarn build:es -d dist/esm",
+    "build:flow": "flow-copy-source --ignore \"**/*.test.js\" src lib && replace-in-files --string=__DEV__ --replacement=false 'lib/**/*.flow'",
+    "build:typescript": "rimraf dist/typescript; flow-to-ts \"src/**/*.js\" --write --inline-utility-types; tsc-silent --project .config/tsconfig.json --createSourceFile .config/createSourceFile.js --suppress @; rimraf \"src/**/*.ts\"",
+    "clean": "rimraf lib && rimraf dist && rimraf test/visual/dist",
+    "dev": "NODE_ENV=dev concurrently 'yarn serve' 'yarn build:dev --watch'",
+    "postpublish": "pinst --enable",
+    "prepublishOnly": "yarn build && pinst --disable",
+    "serve": "serve -l ${DEV_PORT:-5000} tests/visual",
+    "test": "yarn test:unit && yarn test:functional",
+    "test:eslint": "eslint .",
+    "test:flow": "flow",
+    "test:functional": "DEV_PORT=`get-port` jest tests/functional",
+    "test:typescript": "tsc --project tests/typescript/tsconfig.json",
+    "test:unit": "jest --coverage src"
+  },
+  "sideEffects": false,
+  "unpkg": "dist/umd/popper.min.js",
+  "version": "2.9.1"
+}

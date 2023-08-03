@@ -1,0 +1,367 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'database/css/filter.css' %}">
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<link rel="stylesheet" href="{% static 'database/css/experi_index.css' %}">
+<link rel="stylesheet" href="{% static 'common/datatable.css' %}">
+<style>
+    .dataTables_wrapper .dataTables_processing {
+        font-size: 5rem;
+        color: red;
+        z-index: 9999;
+    }
+</style>
+<main id="main">
+    <div class="layui-row">
+        <div class="layui-col-lg2 layui-col-md3 layui-col-sm4">
+            <form class="ui form" action="" id="filter-form">
+                <div class="filter-bar property-filter-bar">
+                    <div class="">
+                        <h6>SOURCE: <i class="fas fa-info-circle"
+                                        data-tippy-content="Experimental database (based on experimental data) and Expanded database (based on experimental and accurate predicted data)"></i>
+                        </h6>
+                        <div class="d-flex flex-column align-items-start">
+                            <button type="button" class="layui-btn layui-btn-radius" onclick="change_dataset()"
+                                    id="experiment-btn"><i
+                                    class="fas fa-flask"></i>
+                                Experimental database
+                            </button>
+                            <button type="button" class="layui-btn layui-btn-radius layui-btn-primary mt-3"
+                                    onclick="change_dataset()" id="expanded-btn"><i
+                                    class="fas fa-expand"></i> Expanded database
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <h6>PROPERTY: </h6>
+                        <div class="field">
+                            <div class="ui selection dropdown" id="property_dropdown">
+                                <input type="hidden" name="property" value="">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">None</div>
+                                <div class="menu">
+                                    <div class="item" data-value="">None</div>
+                                    <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">【Basic】LogD7.4</div>
+                                    <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">【Basic】LogP</div>
+                                    <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">【Basic】LogS</div>
+                                    <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">【Absorption】Caco-2</div>
+                                    <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">【Absorption】Pgp-inhibitor</div>
+                                    <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">【Absorption】Pgp-substrate</div>
+                                    <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">【Absorption】F (30%)</div>
+                                    <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">【Distribution】PPB</div>
+                                    <div class="item" data-value="BBB" data-tippy-content="BBB penetration">【Distribution】BBB</div>
+                                    <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">【Distribution】vdss</div>
+                                    <div class="item" data-value="cyp1a2-inh">【Metabolism】CYP 1A2-inhibitor</div>
+                                    <div class="item" data-value="cyp2c19-inh">【Metabolism】CYP 2C19-inhibitor</div>
+                                    <div class="item" data-value="cyp2c9-inh">【Metabolism】CYP 2C9-inhibitor</div>
+                                    <div class="item" data-value="cyp2d6-inh">【Metabolism】CYP 2D6-inhibitor</div>
+                                    <div class="item" data-value="cyp2d6-sub">【Metabolism】CYP 2d6-substrate</div>
+                                    <div class="item" data-value="cyp3a4-inh">【Metabolism】CYP 3A4-inhibitor</div>
+                                    <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">【Excretion】T<sub>1/2</sub></div>
+                                    <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">【Toxicity】Ames</div>
+                                    <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">【Toxicity】BCF</div>
+                                    <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">【Toxicity】DILI</div>
+                                    <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">【Toxicity】EC</div>
+                                    <div class="item" data-value="ei" data-tippy-content="Eye Irritation">【Toxicity】EI</div>
+                                    <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">【Toxicity】FDAMDD</div>
+                                    <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">【Toxicity】H-HT-2</div>
+                                    <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">【Toxicity】hERG</div>
+                                    <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">【Toxicity】IGC50</div>
+                                    <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">【Toxicity】NR-AhR</div>
+                                    <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">【Toxicity】NR-AR</div>
+                                    <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">【Toxicity】NR-AR-LBD</div>
+                                    <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">【Toxicity】Respiratory</div>
+                                    <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">【Toxicity】SR-ARE</div>
+                                    <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">【Toxicity】SR-MMP</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="mt-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <h6>OTHER FACTORS ABOUT TRANSFOMATION:</h6>
+
+                            <div class="field">
+                                <label>Credibility&nbsp;&nbsp;<i class="fas fa-info-circle"
+                                    data-tippy-content="Qualified (didn’t pass the statistical significance test) and High (passed the statistical significance test)"></i>:</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="credibility" value="">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">None</div>
+                                    <div class="menu">
+                                        <div class="item" data-value="">None</div>
+                                        <div class="item" data-value="2">Qualified</div>
+                                        <div class="item" data-value="1">High</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label>Variance&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-info-circle"
+                                    data-tippy-content="The index of overall property change of a specific transformation."></i>:</label>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="variance" value="">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">None</div>
+                                    <div class="menu">
+                                        <div class="item" data-value="">None</div>
+                                        {% comment %} <div class="item" data-value="1">Change</div> {% endcomment %}
+                                        <div class="item" data-value="0">No Change</div>
+                                        <div class="item" data-value="2">Increase</div>
+                                        <div class="item" data-value="3">Decrease</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="submit-filter mt-5">
+                            <div class="layui-form-item">
+                                <div class="d-flex justify-content-end">
+                                    <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="filter-submit">Apply Filter</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="layui-col-lg10 layui-col-md9 layui-col-sm8 pt-5">
+            <div class="layui-row ps-4 pe-4">
+                <div class="layui-col-lg12 layui-col-md12 layui-col-sm12">
+                    <div class="table-block">
+                        <table id="basic-table" class="ui celled table"
+                                style="width:100%">
+                            <thead style="display: none"></thead>
+                            <tbody class="layui-row">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="{% static 'common/popperjs/core/dist/umd/popper.min.js' %}"></script>
+<script src="{% static 'common/tippyjs/dist/tippy-bundle.umd.min.js' %}"></script>
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>
+<script>
+    $('.ui.radio.checkbox')
+        .checkbox()
+    ;
+    $('.ui.selection.dropdown').dropdown();
+
+    function filter_reset() {
+        $('#filter-form').api('reset');
+    }
+
+    var dataset = 'experiment';
+
+    function change_dataset() {
+        if (dataset === 'experiment') {
+            $('#experiment-btn').addClass('layui-btn-primary');
+            $('#expanded-btn').removeClass('layui-btn-primary');
+            dataset = 'expanded';
+            set_datatable_data('expanded');
+        } else {
+            $('#experiment-btn').removeClass('layui-btn-primary');
+            $('#expanded-btn').addClass('layui-btn-primary');
+            dataset = 'experiment';
+            set_datatable_data('experiment');
+        }
+    }
+
+    function filter_datas(submit_data, dataset) {
+        let request_url = '/deploy/optadmet/optadmet/property-data-source/';
+        var table = $('#basic-table').DataTable({
+            "pageLength": 24,
+            "aLengthMenu": [24, 48, 96],
+            "autoWidth": false,
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+                "data": {
+                    'submit_data': submit_data.field,
+                    'dataset': dataset,
+                }
+            },
+            data: '',
+            "columns": [
+                {
+                    "data": null, width: "20%", 'render': function (data, type, full, meta) {
+                        if (dataset === 'experiment') {
+                            {% comment %} let html_text = '<a href="/deploy/optadmet/optadmet/gdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center"><img src="/static/media/datas/Exp_transformation/' + full.property + '/' + full.idx + '.png" alt=""><p>' + '</p></div></a>'; {% endcomment %}
+                            let html_text = '<a href="/deploy/optadmet/optadmet/gdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center">'+full.svg+'<p>' + '</p></div></a>';
+                            return html_text;
+                        } else {
+                            {% comment %} let html_text = '<a href="/deploy/optadmet/optadmet/pgdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center"><img src="/static/media/datas/Pre_transformation/' + full.property + '/' + full.idx + '.png" alt=""><p>' + '</p></div></a>'; {% endcomment %}
+                            let html_text = '<a href="/deploy/optadmet/optadmet/pgdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center">'+full.svg+'<p>' + '</p></div></a>';
+                            return html_text;
+                        }
+                    }
+                },
+            ],
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "processing": "Loading...",
+                "searchPlaceholder": "Search by ID",
+            },
+            "ordering": false,
+            "searching": false,
+        });
+        table.on('draw', function () {
+            $('#basic-table').find('tbody tr').each(function () {
+                $(this).addClass('layui-col-lg2 layui-col-md3 layui-col-sm4');
+            });
+        })
+    }
+
+    tippy('[data-tippy-content]', {
+        maxWidth: 'none',
+        role: 'tooltip',
+        allowHTML: true,
+        placement: 'right',
+    });
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    layui.use('form', function () {
+        var form = layui.form;
+        //监听提交
+        form.on('submit(filter-submit)', function (data) {
+            data.field.property = $('input[name="property"]').val();
+            data.field.credibility = $('input[name="credibility"]').val();
+            data.field.variance = $('input[name="variance"]').val();
+            filter_datas(data, dataset);
+            return false;
+        });
+    });
+    var isShow = true;
+    $('#shrink-btn').click(function () {
+        if (isShow) {
+            $(this).find('i').addClass('layui-icon-down');
+            $(this).find('i').removeClass('layui-icon-up');
+            $('.layui-nav-item').each(function () {
+                if ($(this).attr("prev-status") === 'show') {
+                    $(this).removeClass('layui-nav-itemed');
+                }
+                isShow = false;
+            });
+        } else {
+            $(this).find('i').removeClass('layui-icon-down');
+            $(this).find('i').addClass('layui-icon-up');
+            $('.layui-nav-item').each(function () {
+                if ($(this).attr("prev-status") === 'show') {
+                    $(this).addClass('layui-nav-itemed');
+                }
+                isShow = true;
+            });
+        }
+    });
+    $('.layui-nav-item').click(function () {
+        if ($(this).attr('prev-status') === 'show') {
+            $(this).attr('prev-status', 'hide');
+        } else {
+            $(this).attr('prev-status', 'show');
+        }
+    });
+
+    function set_datatable_data(dataset) {
+        let request_url = '/deploy/optadmet/optadmet/property-data-source/';
+        var table = $('#basic-table').DataTable({
+            "pageLength": 24,
+            {#bLengthChange: false,#}
+            "aLengthMenu": [24, 48, 96],
+            "autoWidth": false,
+            {#stateSave: true,#}
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+                "data": {
+                    'dataset': dataset,
+                }
+            },
+            data: '',
+            "columns": [
+                {
+                    "data": null, width: "20%", 'render': function (data, type, full, meta) {
+                        if (dataset === 'experiment') {
+                            {% comment %} let html_text = '<a href="/optadmet/gdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center"><img src="/static/media/datas/Exp_transformation/' + full.property + '/' + full.idx + '.png" alt=""><p>' + '</p></div></a>'; {% endcomment %}
+                            let html_text = '<a href="/deploy/optadmet/optadmet/gdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center">'+full.svg+'<p>' + '</p></div></a>';
+                            return html_text;
+                        } else {
+                            {% comment %} let html_text = '<a href="/optadmet/pgdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center"><img src="/static/media/datas/Pre_transformation/' + full.property + '/' + full.idx + '.png" alt=""><p>' + '</p></div></a>'; {% endcomment %}
+                            let html_text = '<a href="/deploy/optadmet/optadmet/pgdetail/' + full.property + '_g_' + full.idx + '/"><div class="text-center">'+full.svg+'<p>' + '</p></div></a>';
+                            return html_text;
+                        }
+                    }
+                },
+            ],
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "processing": "Loading...",
+                "searchPlaceholder": "Search by ID",
+            },
+            "ordering": false,
+            "searching": false,
+        });
+        table.on('draw', function () {
+            $('#basic-table').find('tbody tr').each(function () {
+                $(this).addClass('layui-col-lg2 layui-col-md3 layui-col-sm4');
+            });
+        })
+    }
+
+    function set_datacontent() {
+        let radio_elem = $('.layui-form-radio').find('div');
+        radio_elem.each(function (idx, obj) {
+            $(this).append(' <i class="fas fa-info-circle" data-tippy-content="asdadsa"></i>');
+        })
+    }
+
+    $(document).ready(function () {
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}',}
+        });
+        let property = $('input[name="property"]').val();
+        let credibility = $('input[name="credibility"]').val();
+        let variance = $('input[name="variance"]').val();
+        if (property || credibility || variance) {
+            let data = {field: {}};
+            data.field.property = property;
+            data.field.credibility = credibility;
+            data.field.variance = variance;
+            filter_datas(data, dataset);
+        } else {
+            set_datatable_data('experiment');
+        }
+    });
+</script>

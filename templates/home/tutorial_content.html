@@ -1,0 +1,896 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<link rel="stylesheet" href="{% static 'tutorial/css/style.css' %}">
+{#<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css"#}
+{#      integrity="sha384-Um5gpz1odJg5Z4HAmzPtgZKdTBHZdw8S29IecapCSB31ligYPhHQZMIlWLYQGVoc" crossorigin="anonymous">#}
+{#<link rel="stylesheet" href="{% static 'common/katex/katex.min.css' %}">#}
+{#<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.js"></script>#}
+{#<script defer src="{% static 'common/katex/katex.min.js' %}"></script>#}
+{#<script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/contrib/auto-render.min.js"#}
+{#        onload="renderMathInElement(document.body);"></script>#}
+{#<script defer src="{% static 'common/katex/contrib/auto-render.min.js' %}"#}
+{#        onload="renderMathInElement(document.body);"></script>#}
+<main class="">
+    <div class="layui-col-md-offset2 layui-col-md7">
+        <div class="ui dividing right rail">
+            <div class="ui sticky"><h4 class="ui header">Navigation</h4>
+                <hr>
+                <div class="ui vertical following fluid accordion text menu">
+                    <div class="item"><a class="active title linkto" href="#overview"><b>Overview</b></a></div>
+                    <div class="item">
+                        <a class="active title">
+                            <i class="dropdown icon"></i> <b>Explanation-Property</b>
+                        </a>
+                        <div class="active content menu">
+                            <a class="item linkto" href="#physical_property" id="physical_property-link">1. Physical
+                                properties</a>
+                            <a class="item linkto" href="#absorption" id="absorption-link">2. Absorption</a>
+                            <a class="item linkto" href="#distribution" id="distribution-link">3. Distribution</a>
+                            <a class="item linkto" href="#metabolism" id="metabolism-link">4. Metabolism</a>
+                            <a class="item linkto" href="#excretion" id="excretion-link">5. Excretion</a>
+                            <a class="item linkto" href="#toxicity" id="toxicity-link">6. Toxicity</a>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <a class="active title">
+                            <i class="dropdown icon"></i> <b>Explanation-Transform</b>
+                        </a>
+                        <div class="active content menu">
+                            <a class="item linkto" href="#mmp" id="mmp-link">MMP</a>
+                            <a class="item linkto" href="#transformation-rule" id="transformation-rule-link">Transformation
+                                Rule</a>
+                            <a class="item linkto" href="#global-rule" id="global-rule-link">Global rules</a>
+                            <a class="item linkto" href="#local-transformation" id="local-transformation-link">Local
+                                transformation</a>
+                            <a class="item linkto" href="#average-change" id="average-change-link">Average change</a>
+                            <a class="item linkto" href="#variance" id="variance-link">Variance</a>
+                            <a class="item linkto" href="#distribution-transform"
+                               id="distribution-transform-link">Distribution</a>
+                            <a class="item linkto" href="#credibility" id="credibility-link">Credibility</a>
+                            <a class="item linkto" href="#experimental-database" id="experimental-database-link">Experimental
+                                database</a>
+                            <a class="item linkto" href="#expanded-database" id="expanded-database-link">Expanded
+                                database</a>
+                        </div>
+                    </div>
+                    <div class="item"><a class="active title linkto" href="#reference"><b>References</b></a></div>
+                </div>
+            </div>
+        </div>
+        <div class="left-content mb-5">
+            <h1 class="page-title" style="font-size: 2rem;">
+                <span class="font-weight-bold">Tutorial</span>
+            </h1>
+            <hr class="layui-border-cyan">
+            <h3 id="overview" class="page-title-2">Overview</h3>
+            <p class="page-content-p">
+                One of the great challenges in drug discovery is rationalizing lead optimization. In this phase,
+                compounds that have been identified as the potential drug candidates need to be modified carefully with
+                appropriate absorption, distribution, metabolism, excretion, and toxicity (ADMET) properties. The key
+                questions faced by medicinal chemists are which compound(s) should be made next and how to balance
+                multiple properties. To avoid the poor or ill-advised decisions, it is crucial to draw credible
+                transformation rules from multiple experimental assays and apply them for efficient optimization.
+                Therefore, OptADMET, the first integrated chemical transformation rule platform covering 32 important
+                ADMET properties, is able to provide multiple-property rules and apply invaluable experience for lead
+                optimization. For multiple-property rule database, a total of 177,191 experimental data are used for
+                analysis, which have produced 41,779 credible transformation rules. Besides, 239,194 accurate predicted
+                molecular data are integrated with the initial data for expanded structural conversion exploration,
+                which have converted 146,450 rules as the supplement. Based on the large and credible rule database,
+                OptADMET is able to find desirable substructure transformation and guide the efficient multi-parameter
+                optimization for the queried molecule. Additionally, to benefit the final decision, the ADMET profile of
+                all optimized molecules will also be provided by OptADMET for comprehensive evaluation.
+            </p>
+            <div class="text-center">
+                <img src="{% static 'home/img/tutorial_overview.png' %}"
+                     alt="Fig 1. The constitute of OptADMET webserver"
+                     class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 1. The constitute of OptADMET webserver</p>
+            <p class="page-content-p">
+                OptADMET webserver provides two functions: <strong>Database</strong> and <strong>Optimization</strong>.
+            </p>
+
+            <h5 id="" class="page-title-2">Database</h3>
+            <p class="page-content-p">
+                In the “Database” module, users can find the qualified chemical transformation of <strong>Single property</strong> or
+                <strong>Multiple property</strong>, with requirements of data source, property and etc.
+            </p>
+            <p class="page-content-p">
+                For Single Property transformation rules (Fig 2), users can click the picture to get more information,
+                including ID, left fragment, right fragment, distribution, average change, the number of MMPs (count),
+                statistical significance, local transformations summary table and experimental MMPs summary table. (Fig
+                3)
+            </p>
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/1.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 2. Single property filters</p>
+            {% comment %} <p class="page-content-p">
+                By clicking the picture, more information about this global rule will be provided, including ID, left
+                fragment, right fragment, distribution, average change, the number of MMPs (count), statistical
+                significance, local transformations summary table and experimental MMPs summary table. (Fig 3)
+            </p> {% endcomment %}
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/2.png' %}" alt="" class="img-fluid img-thumbnail mb-2">
+                <img src="{% static 'tutorial/img/3.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 3. Detailed global rule information</p>
+            <p class="page-content-p">
+                By clicking the local transformation item more information about this local transformation will be
+                provided, including ID, left fragment, right fragment, distribution, average change, the number of MMPs
+                (count), statistical significance and experimental MMPs summary table. (Fig 4)
+            </p>
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/4.png' %}" alt="" class="img-fluid img-thumbnail mb-2">
+                <img src="{% static 'tutorial/img/5.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 4. Detailed local rule information</p>
+            <p class="page-content-p">
+                For Multiple Property transformation rules, users can find the chemical transformation with the summary
+                of multiple property information by selecting data source and property (maximum 2). (Fig 5)
+            </p>
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/6.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 5. Multiple property filters</p>
+            <p class="page-content-p">
+                By clicking the picture, more information about this rule will be provided, including ID, left fragment,
+                right fragment, the property variance summary of the global rule and the property variance summary of
+                the local transformation. (Fig 6)
+            </p>
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/7.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 6. Detailed rule information</p>
+
+            <h5 id="" class="page-title-2">Optimization</h3>
+            <p class="page-content-p">
+                In the “Optimization” module, users can optimize the initial molecule with regards to a number of ADMET
+                properties. Two molecule input types are provided: 1. input single SMILES string; 2. draw molecule from
+                Editor below. Along with query molecule, users can choose transformation rules from experimental or
+                expanded database, with maximum two properties. (Fig 7)
+            </p>
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/8.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 7. Checker module</p>
+
+            <p class="page-content-p">
+                After submission, the Summary and Generated block will present the overview of the optimization results
+                and the detailed information about the chemical transformation rules. (Fig 8)
+            </p>
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/extra1.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 8. The result page of Optimization module</p>
+
+            <p class="page-content-p">
+                In the Summary block, the information of the original molecule and the distribution of the optimized molecules will be provided.
+            </p>
+            <p class="page-content-p">
+                In the Generated molecule block, the detailed information about optimized molecule and related
+                transformation rule will be provided. By clicking the picture, more information about this rule will be
+                provided, including ID, left fragment, right fragment, the property variance summary of the global rule
+                and
+                the property variance summary of the local transformation. (Fig 9) Besides, to benefit the comprehensive
+                evaluation, the ADMET profile of the optimized molecule will be provided by clicking the Detail. (Fig 10)
+            </p>
+
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/9.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 9. Checker results</p>
+
+            <div class="text-center">
+                <img src="{% static 'tutorial/img/extra2.png' %}" alt="" class="img-fluid img-thumbnail">
+            </div>
+            <p class="img-title">Fig 10. The ADMET profile of the optimized molecule</p>
+            
+            <p class="page-content-p">
+                To achieve the multi-property task, users can choose concerned ADMET properties for further screening.
+                The empirical-based ADMET property interval is summarized in Table 1.
+            </p>
+
+            <p class="table-title">Table1. The data information about OptADMET database</p>
+            <table class="ui striped table">
+                <tbody>
+                <tr>
+                    <th>Type</th>
+                    <th>Endpoint</th>
+                    <th>Property interval</th>
+                    <th>Unit</th>
+                </tr>
+                <tr>
+                    <td>Basic</td>
+                    <td>LogD7.4</td>
+                    <td>1≤value≤3</td>
+                    <td>log mol/L</td>
+                </tr>
+                <tr>
+                    <td>Basic</td>
+                    <td>LogP</td>
+                    <td>0≤value≤3</td>
+                    <td>log mol/L</td>
+                </tr>
+                <tr>
+                    <td>Basic</td>
+                    <td>LogS</td>
+                    <td>-4≤value≤0.5</td>
+                    <td>log mol/L</td>
+                </tr>
+                <tr>
+                    <td>Absorption</td>
+                    <td>Caco-2</td>
+                    <td>–5.15≤value</td>
+                    <td>log cm/s</td>
+                </tr>
+                <tr>
+                    <td>Absorption</td>
+                    <td>Pgp-inhibitor</td>
+                    <td>0≤value≤0.3</td>
+                    <td>probability&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Absorption</td>
+                    <td>Pgp-substrate</td>
+                    <td>0≤value≤0.3</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Absorption</td>
+                    <td>F (30%)</td>
+                    <td>0≤value≤0.3</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Distribution</td>
+                    <td>PPB</td>
+                    <td>value＜0.9</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Distribution</td>
+                    <td>BBB</td>
+                    <td>0≤value≤0.3</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Distribution</td>
+                    <td>vdss</td>
+                    <td>0.04≤value≤20</td>
+                    <td>L/kg</td>
+                </tr>
+                <tr>
+                    <td>Metabolism</td>
+                    <td>CYP 1A2-inhibitor</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Metabolism</td>
+                    <td>CYP 2C19-inhibitor</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Metabolism</td>
+                    <td>CYP 2C9-inhibitor</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Metabolism</td>
+                    <td>CYP 2D6-inhibitor</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Metabolism</td>
+                    <td>CYP 2d6-substrate</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Metabolism</td>
+                    <td>CYP 3A4-inhibitor</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Excretion</td>
+                    <td>T1/2</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>Ames</td>
+                    <td>0≤value≤0.3</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>BCF</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>DILI</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>EC</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>EI</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>FDAMDD</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>H-HT-2</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>hERG</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>IGC50</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>NR-AhR</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>NR-AR</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>NR-AR-LBD</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>Respiratory</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>SR-ARE</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                <tr>
+                    <td>Toxicity</td>
+                    <td>SR-MMP</td>
+                    <td>value≤0.5</td>
+                    <td>probability</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h3 id="explanation" class="page-title-2">Explanation-Property</h3>
+
+            <div>
+                <h5 class="page-title-4 scroll-address" id="physical_property">1. Physical properties</h5>
+                <p class="explanation-content-p">
+                    <strong>LogS</strong>: The logarithm of aqueous solubility value. The first step in the drug absorption
+                    process is the
+                    disintegration of the tablet or capsule, followed by the dissolution of the active drug. Low solubility
+                    is detrimental to oral absorption, and early measurement of this property is of great importance in drug
+                    discovery.
+                    <br>
+                    <strong>Change explanation</strong>: Increase means the transformation from left to right will increase
+                    the value of LogS
+                    (△&ge;+0.3), while Decrease means the transformation from left to right will decrease the value of LogS
+                    (△&le;-0.3). No change means there is no change of the value (-0.3&lt;△&lt;+0.3).
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>LogP</strong>: The logarithm of the n-octanol/water distribution coefficient. logP possess a
+                    leading position
+                    with considerable impact on both membrane permeability and hydrophobic binding to macromolecules,
+                    including the target receptor as well as other proteins like plasma proteins, transporters, or
+                    metabolizing enzymes.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to
+                    right will increase
+                    the value of LogP (△&ge;+0.3), while <strong style="color: #14A6EC">Decrease</strong> means the
+                    transformation from left to right
+                    will decrease the
+                    value of LogP (△&le;-0.3). <strong style="color: orange">No change</strong> means there is no change of
+                    the
+                    value (-0.3&lt;△&lt;+0.3).
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>LogD7.4</strong>: The logarithm of the n-octanol/water distribution coefficients at pH=7.4. To
+                    exert a therapeutic effect, one drug must enter the blood circulation and then reach the site of action.
+                    Thus, an eligible drug usually needs to keep a balance between lipophilicity and hydrophilicity to
+                    dissolve in the body fluid and penetrate the biomembrane effectively. Therefore, it is important to
+                    estimate the n-octanol/water distribution coefficients at physiological pH (logD7.4) values for
+                    candidate compounds in the early stage of drug discovery.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase
+                    the value of LogD7.4 (△&ge;+0.3), while <strong style="color: #14A6EC">Decrease</strong> means the
+                    transformation from left to right will
+                    decrease
+                    the value of LogD7.4 (△&le;-0.3). <strong style="color: orange">No change</strong> means there is no
+                    change of the value (-0.3&lt;△&lt;+0.3).
+                </p><br>
+
+                <h5 class="page-title-4 scroll-address" id="absorption">2. Absorption</h5>
+                <p class="explanation-content-p">
+                    <strong>Caco-2 Permeability</strong>: Before an oral drug reaches the systemic circulation, it must pass
+                    through intestinal cell membranes via passive diffusion, carrier-mediated uptake or active transport
+                    processes. The human colon adenocarcinoma cell lines (Caco-2), as an alternative approach for the human
+                    intestinal epithelium, has been commonly used to estimate in vivo drug permeability due to their
+                    morphological and functional similarities. Thus, Caco-2 cell permeability has also been an important
+                    index for an eligible candidate drug compound.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase
+                    the value of Caco-2 Permeability (△&ge;+0.3), while <strong style="color: #14A6EC">Decrease</strong>
+                    means the transformation from left to right
+                    will decrease the value of Caco-2 Permeability (△&le;-0.3). <strong style="color: orange">No
+                    change</strong> means there is no change of the
+                    value
+                    (-0.3&lt;△&lt;+0.3).
+                </p><br>
+                <p class="explanation-content-p">
+                    <strong>Pgp inhibitor</strong>: The inhibitor of P-glycoprotein. The P-glycoprotein, also known as MDR1
+                    or 2 ABCB1, is a membrane protein member of the ATP-binding cassette (ABC) transporters superfamily. It
+                    is probably the most promiscuous efflux transporter, since it recognizes a number of structurally
+                    different and apparently unrelated xenobiotics; notably, many of them are also CYP3A4 substrates.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of inhibition, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of inhibition. <strong style="color: orange">No
+                    change</strong> means there is no change.
+                </p><br>
+                <p class="explanation-content-p">
+                    <strong>Pgp substrate</strong>: As described in the Pgp-inhibitor section, modulation of P-glycoprotein
+                    mediated transport has significant pharmacokinetic implications for Pgp substrates, which may either be
+                    exploited for specific therapeutic advantages or result in contraindications.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of inhibition, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of inhibition. <strong style="color: orange">No
+                    change</strong> means there is no change.
+                </p><br>
+                <p class="explanation-content-p">
+                    <strong>F30%</strong>: The human oral bioavailability 30%. For any drug administrated by the
+                    oral route, oral bioavailability is undoubtedly one of the most important pharmacokinetic parameters
+                    because it is the indicator of the efficiency of the drug delivery to the systemic circulation.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will decrease the bioavailability, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will increase
+                    the bioavailability. <strong style="color: orange">No
+                    change</strong> means there is no change.
+                </p><br>
+
+                <h5 class="page-title-4 scroll-address" id="distribution">3. Distribution</h5>
+                <p class="explanation-content-p">
+                    <strong>PPB</strong>: Plasma protein binding. One of the major mechanisms of drug uptake and
+                    distribution is through PPB, thus the binding of a drug to proteins in plasma has a strong influence on
+                    its pharmacodynamic behavior. PPB can directly influence the oral bioavailability because the free
+                    concentration of the drug is at stake when a drug binds to serum proteins in this process.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the value of PPB (△&ge;+0.3), while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the value of PPB (△&le;-0.3). <strong
+                        style="color: orange">No
+                    change</strong> means there is almost no change of the value (-0.3&lt;
+                    {#                \( \lg \frac{PPB_{\text {right#}
+                    {#                }}}{PPB_{\text {left }}} \)#}
+                    △&lt;+0.3).
+                </p><br>
+                <p class="explanation-content-p">
+                    <strong>VDss</strong>: Volume Distribution. The VD is a theoretical concept that connects the
+                    administered dose with the actual initial concentration present in the circulation and it is an
+                    important parameter to describe the in vivo distribution for drugs. In practical, we can speculate the
+                    distribution characters for an unknown compound according to its VD value, such as its condition binding
+                    to plasma protein, its distribution amount in body fluid and its uptake amount in tissues.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the value of VDss (△&ge;+0.3), while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the value of VDss (△&le;-0.3). <strong
+                        style="color: orange">No
+                    change</strong> means there is almost no change of the value (-0.3&lt;△&lt;+0.3).
+                </p><br>
+                <p class="explanation-content-p">
+                    <strong>BBB penetration</strong>: Drugs that act in the CNS need to cross the blood–brain barrier (BBB)
+                    to reach their molecular target. By contrast, for drugs with a peripheral target, little or no BBB
+                    penetration might be required in order to avoid CNS side effects.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the BBB penetration, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the BBB penetration. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <h5 class="page-title-4 scroll-address" id="metabolism">4. Metabolism</h5>
+                <p class="explanation-content-p">
+                    <strong>CYP1A2/ CYP2C19/ CYP2C9/ CYP2D6/ CYP3A4 inhibitor and CYP2D6 substrate</strong>: Based on the
+                    chemical nature of biotransformation, the process of drug metabolism reactions can be divided into two
+                    broad categories: phase I (oxidative reactions) and phase II (conjugative reactions). The human
+                    cytochrome P450 family (phase I enzymes) contains 57 isozymes and these isozymes metabolize
+                    approximately two-thirds of known drugs in human with 80% of this attribute to five isozymes––1A2, 2C9,
+                    2C19, 2D6 and 3A4. Most of these CYPs responsible for phase I reactions are concentrated in the liver.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of inhibition, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of inhibition. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <h5 class="page-title-4 scroll-address" id="excretion">5. Excretion</h5>
+                <p class="explanation-content-p">
+                    <strong>T1/2</strong>: The half-life of a drug is a hybrid concept that involves clearance and volume of
+                    distribution, and it is arguably more appropriate to have reliable estimates of these two properties
+                    instead.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will shorten half-life, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will
+                    extend half-life. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <h5 class="page-title-4 scroll-address" id="toxicity">6. Toxicity</h5>
+                <p class="explanation-content-p">
+                    <strong>H-HT-2</strong>: The human hepatotoxicity. Drug induced liver injury is of great concern for
+                    patient safety and a major cause for drug withdrawal from the market. Adverse hepatic effects in
+                    clinical trials often lead to a late and costly termination of drug development programs.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+                <p class="explanation-content-p">
+                    <strong>hERG Blockers</strong>: The human ether-a-go-go related gene. The During cardiac depolarization
+                    and repolarization, a voltagegated potassium channel encoded by hERG plays a major role in the
+                    regulation of the exchange of cardiac action potential and resting potential. The hERG blockade may
+                    cause long QT syndrome (LQTS), arrhythmia, and Torsade de Pointes (TdP), which lead to palpitations,
+                    fainting, or even sudden death.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>DILI</strong>: Drug-induced liver injury (DILI) has become the most common safety problem of
+                    drug withdrawal from the market over the past 50 years.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>AMES Toxicity</strong>: The Ames test for mutagenicity. The mutagenic effect has a close
+                    relationship with the carcinogenicity, and it is the most widely used assay for testing the mutagenicity
+                    of compounds.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>FDAMDD</strong>: The maximum recommended daily dose provides an estimate of the toxic dose
+                    threshold of chemicals in humans.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>Skin Sensitization</strong>: Skin sensitization is a potential adverse effect for dermally
+                    applied products. The evaluation of whether a compound, that may encounter the skin, can induce allergic
+                    contact dermatitis is an important safety concern.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>Eye Corrosion/Irritation</strong>: Assessing the eye irritation/corrosion (EI/EC) potential of a
+                    chemical is a necessary component of risk assessment. Cornea and conjunctiva tissues comprise the
+                    anterior surface of the eye, and hence cornea and conjunctiva tissues are directly exposed to the air
+                    and easily suffer injury by chemicals. There are several substances, such as chemicals used in
+                    manufacturing, agriculture and warfare, ocular pharmaceuticals, cosmetic products, and household
+                    products which can cause EI or EC.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>Respiratory Toxicity</strong>: Among these safety issues, respiratory toxicity has become the
+                    main cause of drug withdrawal. Drug induced respiratory toxicity is usually underdiagnosed because it
+                    may not have distinct early signs or symptoms in common medications and can occur with significant
+                    morbidity and mortality. Therefore, careful surveillance and treatment of respiratory toxicity is of
+                    great importance.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>IGC50</strong>: 48 hour Tetrahymena pyriformis IGC50 (concentration of the test chemical in
+                    water in mg/L that causes 50% growth inhibition to Tetrahymena pyriformis after 48 hours). The unit of
+                    IGC50 is −log10[(mg/L)/(1000*MW)].
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>NR-AR</strong>: Androgen receptor (AR), a nuclear hormone receptor, plays a critical role in
+                    AR-dependent prostate cancer and other androgen related diseases. Endocrine disrupting chemicals (EDCs)
+                    and their interactions with steroid hormone receptors like AR may cause disruption of normal endocrine
+                    function as well as interfere with metabolic homeostasis, reproduction, developmental and behavioral
+                    functions.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>NR-AR-LBD</strong>: Androgen receptor (AR), a nuclear hormone receptor, plays a critical role in
+                    AR-dependent prostate cancer and other androgen related diseases. Endocrine disrupting chemicals (EDCs)
+                    and their interactions with steroid hormone receptors like AR may cause disruption of normal endocrine
+                    function as well as interfere with metabolic homeostasis, reproduction, developmental and behavioral
+                    functions.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>NR-AhR</strong>: The Aryl hydrocarbon Receptor (AhR), a member of the family of basic
+                    helix-loop-helix transcription factors, is crucial to adaptive responses to environmental changes. AhR
+                    mediates cellular responses to environmental pollutants such as aromatic hydrocarbons through induction
+                    of phase I and II enzymes but also interacts with other nuclear receptor signaling pathways.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>SR-ARE</strong>: Oxidative stress has been implicated in the pathogenesis of a variety of
+                    diseases ranging from cancer to neurodegeneration. The antioxidant response element (ARE) signaling
+                    pathway plays an important role in the amelioration of oxidative stress. The CellSensor ARE-bla HepG2
+                    cell line (Invitrogen) can be used for analyzing the Nrf2/antioxidant response signaling pathway. Nrf2
+                    (NF-E2-related factor 2) and Nrf1 are transcription factors that bind to AREs and activate these genes.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+
+                <p class="explanation-content-p">
+                    <strong>SR-MMP</strong>: Mitochondrial membrane potential (MMP), one of the parameters for mitochondrial
+                    function, is generated by mitochondrial electron transport chain that creates an electrochemical
+                    gradient by a series of redox reactions. This gradient drives the synthesis of ATP, a crucial molecule
+                    for various cellular processes. Measuring MMP in living cells is commonly used to assess the effect of
+                    chemicals on mitochondrial function; decreases in MMP can be detected using lipophilic cationic
+                    fluorescent dyes.
+                    <br>
+                    <strong>Change explanation</strong>: <strong style="color: #83BC32">Increase</strong> means the
+                    transformation from left to right will increase the risk of toxicity, while <strong
+                        style="color: #14A6EC">Decrease</strong> means the transformation from left to right will decrease
+                    the risk of toxicity. <strong
+                        style="color: orange">No change</strong> means there is no change.
+                </p><br>
+            </div>
+
+            <h3 id="transform" class="page-title-2">Explanation-Transform</h3>
+
+            <p class="explanation-content-p scroll-address" id="mmp">
+                <strong>MMP</strong>: Matched molecular pairs. MMP is generally defined as a pair of compounds that can
+                be interconverted by a well-defined chemical transformation at a single site, with the change between
+                the pair elements referring to the transform, and the invariant feature referring to the context.
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="transformation-rule">
+                <strong>Transformation Rule</strong>: this term refers to the chemical transformation leading to a
+                change in a pharmacological or physiochemical endpoint. For global rules, they need to attain enough
+                MMPs (&ge;5 for labeled-data, &ge;10 for consecutive data).
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="global-rule">
+                <strong>Global rules</strong>: Transformation rules which are summarized without considering the context
+                information.
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="local-transformation">
+                <strong>Local transformation</strong>: Transformations which are summarized based on the consideration
+                of substructure change and localized atom information. There are a total of 10 types of localized atom,
+                including aromatic/aliphatic carbon, aromatic/aliphatic nitrogen, aromatic/aliphatic oxygen,
+                aromatic/aliphatic sulfur, halogen atoms and other.
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="average-change">
+                <strong>Average change</strong>: The average property change value of the specific transformation.
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="variance">
+                <strong>Variance</strong>: The index of overall property change of a specific transformation. According
+                to the direction and range of average change, three variance levels are provided: <strong
+                    style="color: #83BC32">Increase</strong> (△&gt;0 for
+                labeled-data, △&ge;+0.3 for consecutive data), <strong
+                    style="color: orange">No change</strong> (△=0 for labeled-data, -0.3&le;△&le;+0.3 for consecutive
+                data) and <strong
+                    style="color: #14A6EC">Decrease</strong> (△&lt;0
+                for labeled-data, △&le;-0.3 for consecutive data).
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="distribution-transform">
+                <strong>Distribution</strong>: The distribution of MMP value changes of a specific transformation. Three
+                variance levels are provided: <strong
+                    style="color: #83BC32">Increase</strong> (△&ge;0 for labeled-data, △&ge;+0.3 for consecutive data),
+                <strong
+                        style="color: orange">No change</strong>
+                (△=0 for labeled-data, +0.3&ge;△&ge;-0.3 for consecutive data) and <strong
+                    style="color: #14A6EC">Decrease</strong> (△<0 for labeled-data, -0.3&ge;△ for
+                consecutive data).
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="credibility">
+                <strong>Credibility</strong>: The index of the credibility of transformation rule. Two credibility
+                levels are provided: High (passed the statistical significance test) and Qualified (didn’t pass the
+                statistical significance test).
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="experimental-database">
+                <strong>Experimental database</strong>: Transformation rules are summarized from the 178,197
+                experimental data which were collected from literature and databases.
+            </p><br>
+
+            <p class="explanation-content-p scroll-address" id="expanded-database">
+                <strong>Expanded database</strong>: Transformation rules are summarized from the combination of 178,197
+                experimental and 244,845 accurate predicted data, which are used as the supplementary guidance.
+            </p><br>
+
+            <h3 id="reference" class="page-title-2">References</h3>
+            <ul class="page-content-ul">
+                <li>
+                    [1] Lumley, J. A. , Desai, P. , Wang, J. , Cahya, S. , & Zhang, H. The Derivation of a Matched
+                    Molecular Pairs Based ADME/Tox Knowledge Base for Compound Optimization. Journal of Chemical
+                    Information and Modeling, 2020, 60(10): 4757-4771.
+                </li>
+                <li>
+                    [2] Griffen, E. , Leach, A. G. , Robb, G. R. , & Warner, D. J. Matched molecular pairs as a
+                    medicinal chemistry tool. J Med Chem, 2011, 54(22): 7739-7750.
+                </li>
+                <li>
+                    [3] Kramer, C. , Ting, A. , Zheng, H. , Hert, J. , Schindler, T. , Stahl, M. , Robb, G. , Crawford,
+                    J. J. , Blaney, J. , Montague, S. , Leach, A. G. , Dossetter, A. G. , & Griffen, E. J. Learning
+                    Medicinal Chemistry Absorption, Distribution, Metabolism, Excretion, and Toxicity (ADMET) Rules from
+                    Cross-Company Matched Molecular Pairs Analysis (MMPA). J Med Chem, 2018, 61(8): 3277-3292.
+                </li>
+                <li>
+                    [4] Sushko, Y. , Novotarskyi, S. , Korner, R. , Vogt, J. , Abdelaziz, A. , & Tetko, I. V.
+                    Prediction-driven matched molecular pairs to interpret QSARs and aid the molecular optimization
+                    process. J Cheminform, 2014, 6(1): 48.
+                </li>
+                <li>
+                    [5] Dong, J. , Wang, N. N. , Yao, Z. J. , Zhang, L. , Cheng, Y. , Ouyang, D. , Lu, A. P. , & Cao, D.
+                    S.
+                    ADMETlab: a platform for systematic ADMET evaluation based on a comprehensively collected ADMET
+                    database. J Cheminform, 2018, 10(1): 29.
+                </li>
+                <li>
+                    [6] Xiong, G. , Wu, Z. , Yi, J. , Fu, L. , Yang, Z. , Hsieh, C. , Yin, M. , Zeng, X. , Wu, C. , Lu,
+                    A. ,
+                    Chen, X. , Hou, T. , & Cao, D. ADMETlab 2.0: an integrated online platform for accurate and
+                    comprehensive predictions of ADMET properties. Nucleic Acids Res, 2021, doi: 10.1093/nar/gkab255.
+                </li>
+                <li>
+                    [7] Fu, L. , Liu, L. , Yang, Z. J. , Li, P. , Ding, J. J. , Yun, Y. H. , Lu, A. P. , Hou, T. J. , &
+                    Cao, D. S. Systematic Modeling of logD7.4 Based on Ensemble Machine Learning, Group Contribution,
+                    and Matched Molecular Pair Analysis. J Chem Inf Model, 2020, 60(1): 63-76.
+                </li>
+                <li>
+                    [8] Fu, L. , Yang, Z. Y. , Yang, Z. J. , Yin, M. Z. , Lu, A. P. , Chen, X. , Liu, S. , Hou, T. J. ,
+                    &
+                    Cao, D. S. QSAR-assisted-MMPA to expand chemical transformation space for lead optimization. Brief
+                    Bioinform, 2021, doi: 10.1093/bib/bbaa374.
+                </li>
+            </ul>
+        </div>
+    </div>
+</main>
+{#<script src="{% static 'common/katex/katex.min.js' %}"></script>#}
+{#<script src="{% static 'common/katex/contrib/auto-render.min.js' %}"></script>#}
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>
+<script>
+    var prev_state = '';
+    $('.ui.accordion').accordion({
+        exclusive: false,
+    });
+    $('.ui.sticky').sticky({
+        offset: 100,
+    });
+    $("a.linkto").click(function () {
+        $("html, body").animate({
+            scrollTop: $($(this).attr("href")).offset().top - 100,
+        }, {
+            duration: 100,
+            easing: "swing",
+        });
+    });
+</script>

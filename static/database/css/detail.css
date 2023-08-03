@@ -1,0 +1,111 @@
+#information,
+#mmp-block {
+    box-shadow: 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%), 0px 3px 1px -2px rgb(0 0 0 / 20%);
+}
+
+
+/*.key {*/
+
+
+/*    width: 20%;*/
+
+
+/*}*/
+
+
+/*.value {*/
+
+
+/*    width: 60%;*/
+
+
+/*}*/
+
+#chart-box {
+    width: 100%;
+    height: 400px;
+    margin: 0 auto;
+}
+
+#bar-graph {
+    /*margin: 0 auto;*/
+    /*left: 50%;*/
+    /*transform: translateX(-50%);*/
+}
+
+.layui-table th {
+    font-weight: 700;
+    text-align: left;
+}
+
+.dataTables_length,
+.dataTables_info {
+    text-align: left;
+}
+
+#local-table tr td {
+    text-align: left;
+}
+
+#mmp-block img {
+    max-width: 160px;
+}
+
+.modal-content {
+    width: 100%;
+    text-align: center;
+}
+
+.modal-content img {
+    width: 100%;
+    height: 100%;
+    max-width: 800px;
+    max-height: 320px;
+    margin: 0 auto;
+}
+
+.fragment img {
+    max-height: 360px;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.structure svg {
+    max-height: 150px;
+    max-width: 300px;
+    width: 100%;
+}
+
+.layui-table td {
+    font-size: 1.05rem;
+}
+
+.key {
+    color: rgba(40, 58, 90, 0.9);
+}
+
+.layui-table tbody tr:hover,
+.layui-table thead tr,
+.layui-table-click,
+.layui-table-header,
+.layui-table-hover,
+.layui-table-mend,
+.layui-table-patch,
+.layui-table-tool,
+.layui-table[lay-even] tr:nth-child(even) {
+    background-color: transparent;
+}
+
+#mmp-table td svg {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+#transformation_svg svg {
+    width: 60%;
+}

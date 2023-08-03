@@ -1,0 +1,534 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'common/datatable.css' %}">
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<link rel="stylesheet" href="{% static 'checker/css/style.css' %}">
+
+{#<link href="{% static 'common/bootstrap-5.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">#}
+{#<script src="{% static 'common/bootstrap-5.0.0-dist/js/bootstrap.min.js' %}"></script>#}
+
+{# 分子编辑器 #}
+<script type="text/javascript" language="javascript" src="{% static 'common/chemeditor/jsme.nocache.js' %}"></script>
+{# 表单验证 #}
+<script src="{% static 'common/validate/js/validator.js' %}"></script>
+
+{# js等待进度条的引入 #}
+<script src="{% static 'common/validate/js/spin.min.js' %}"></script>
+{#<script>#}
+{#    $(document).ready(function () {#}
+{#        $('[data-toggle="tooltip"]').tooltip();#}
+{#    });#}
+{#</script>#}
+<main id="main">
+    <div class="layui-col-md-offset2 layui-col-md8 mb-4">
+        <div class="d-flex justify-content-between align-items-center layui-row" id="data-header">
+            <div class="layui-col-md4">
+                <div class="title">Transformation Checker</div>
+            </div>
+            <ul class="nav nav-pills d-flex justify-content-evenly align-items-center layui-col-md8" id="pills-tab"
+                role="tablist">
+                <li class="nav-item my-2" role="presentation">
+                    <button class="nav-link active ui inverted button" id="smiles-tab" data-bs-toggle="pill"
+                            href="#smiles-block" role="tab"
+                            aria-controls="pills-smiles" aria-selected="true">Paste a single SMILES string
+                    </button>
+                </li>
+                <li class="nav-item my-2" role="presentation">
+                    <button class="nav-link ui inverted button" id="draw-tab" data-bs-toggle="pill"
+                            href="#draw" role="tab"
+                            aria-controls="pills-draw" aria-selected="false">Draw a molecule using JMSE editor
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="smiles-block" role="tabpanel" aria-labelledby="smiles-tab">
+                <div class="download-content">
+                    <div class="layui-panel">
+                        <div style="padding: 30px;">
+                            <form class="ui form" action="{% url 'home:checkercal' %}" method="post" id="form1">
+                                {% csrf_token %}
+
+                                {% if message %}
+                                    <div class="alert alert-warning">{{ message }}</div>
+                                {% endif %}
+
+                                <div class="layui-row d-flex align-items-end">
+                                    <div class="layui-col-md10">
+                                        <div class="required field">
+                                            <label style="font-size: 1.2rem;color: rgb(40, 58, 90);font-weight: 600">SMILES</label>
+                                            <input type="text" name="smiles" placeholder=""
+                                                value="{% if smiles %}{{ smiles }}{% endif %}" id="smiles">
+                                            <input type="hidden" id="method" value="1" name="method">
+                                        </div>
+
+                                    </div>
+                                    <div class="layui-col-md2 text-center">
+                                        <button class="ui vk button" type="button"
+                                                onclick="addexample()">
+                                            Example
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="field" style="margin-top: 2rem;">
+                                    <label style="font-size: 1.2rem; font-weight: 600">Database: </label>
+                                    <select class="ui selection dropdown" name="dataset" style="width: 100%;">
+                                        <option value="1">Experimental Database</option>
+                                        <option value="2">Expand Database</option>
+                                    </select>
+                                </div>
+                                <div class="field" style="margin-top: 2rem;">
+                                    <label style="font-size: 1.2rem; font-weight: 600">Property: <i class="fas fa-info-circle"
+                                                                                                    style="color: orange"
+                                                                                                    data-tippy-content="Please select at least one properties!"></i></label>
+                                </div>
+
+                                <div class="field">
+                                    <div class="ui selection dropdown" id="property_dropdown">
+                                        <input type="hidden" name="property1a" value="logd">
+                                        <i class="dropdown icon"></i>
+                                        <div class="text">[Basic] LogD7.4</div>
+                                        <div class="menu">
+                                            <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">[Basic] LogD7.4 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.836; RMSE: 0.559; MAE: 0.427"></i></div>
+                                            <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">[Basic] LogP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.957; RMSE: 0.357; MAE: 0.256"></i></div>
+                                            <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">[Basic] LogS <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.863; RMSE: 0.812; MAE: 0.552"></i></div>
+                                            <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">[Absorption] Caco-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.733; RMSE: 0.364; MAE: 0.256"></i></div>
+                                            <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">[Absorption] Pgp-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.936; ACC: 0.877; F-measure: 0.843; Specificity: 0.825; Sensitivity: 0.991"></i></div>
+                                            <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">[Absorption] Pgp-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.828; F-measure: 0.830; Specificity: 0.835; Sensitivity: 0.821"></i></div>
+                                            <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">[Absorption] F (30%) <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.774; ACC: 0.747; F-measure: 0.572; Specificity: 0.871; Sensitivity: 0.501"></i></div>
+                                            <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">[Distribution] PPB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.734; RMSE: 0.135; MAE: 0.834"></i></div>
+                                            <div class="item" data-value="BBB" data-tippy-content="BBB penetration">[Distribution] BBB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.924; ACC: 0.843; F-measure: 0.863; Specificity: 0.803; Sensitivity: 0.873"></i></div>
+                                            <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">[Distribution] vdss <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.819; RMSE: 0.637; MAE: 0.371"></i></div>
+                                            <div class="item" data-value="cyp1a2-inh">[Metabolism] CYP 1A2-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.933; ACC: 0.859; F-measure: 0.847; Specificity: 0.844; Sensitivity: 0.871"></i></div>
+                                            <div class="item" data-value="cyp2c19-inh">[Metabolism] CYP 2C19-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.883; ACC: 0.814; F-measure: 0.799; Specificity: 0.811; Sensitivity: 0.817"></i></div>
+                                            <div class="item" data-value="cyp2c9-inh">[Metabolism] CYP 2C9-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.875; ACC: 0.810; F-measure: 0.715; Specificity: 0.719; Sensitivity: 0.855"></i></div>
+                                            <div class="item" data-value="cyp2d6-inh">[Metabolism] CYP 2D6-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.882; ACC: 0.882; F-measure: 0.647; Specificity: 0.557; Sensitivity: 0.98"></i></div>
+                                            <div class="item" data-value="cyp2d6-sub">[Metabolism] CYP 2d6-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.821; ACC: 0.748; F-measure: 0.748; Specificity: 0.756; Sensitivity: 0.741"></i></div>
+                                            <div class="item" data-value="cyp3a4-inh">[Metabolism] CYP 3A4-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.899; ACC: 0.818; F-measure: 0.778; Specificity: 0.775; Sensitivity: 0.848"></i></div>
+                                            <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">[Excretion] T<sub>1/2</sub> <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.801; ACC: 0.727; F-measure: 0.478; Specificity: 0.658; Sensitivity: 0.827"></i></div>
+                                            <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">[Toxicity] Ames <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.914; ACC: 0.841; F-measure: 0.860; Specificity: 0.807; Sensitivity: 0.868"></i></div>
+                                            <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">[Toxicity] BCF <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.775; RMSE: 0.648; MAE: 0.471"></i></div>
+                                            <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">[Toxicity] DILI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.912; ACC: 0.835; F-measure: 0.833; Specificity: 0.822; Sensitivity: 0.847"></i></div>
+                                            <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">[Toxicity] EC <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.99; ACC: 0.952; F-measure: 0.961; Specificity: 0.948; Sensitivity: 0.958"></i></div>
+                                            <div class="item" data-value="ei" data-tippy-content="Eye Irritation">[Toxicity] EI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.978; ACC: 0.942; F-measure: 0.961; Specificity: 0.850; Sensitivity: 0.973"></i></div>
+                                            <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">[Toxicity] FDAMDD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.843; ACC: 0.76; F-measure: 0.749; Specificity: 0.762; Sensitivity: 0.757"></i></div>
+                                            <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">[Toxicity] H-HT-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.776; ACC: 0.706; F-measure: 0.752; Specificity: 0.614; Sensitivity: 0.776"></i></div>
+                                            <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">[Toxicity] hERG <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.889; F-measure: 0.778; Specificity: 0.869; Sensitivity: 0.909"></i></div>
+                                            <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">[Toxicity] IGC50 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.784; RMSE: 0.489; MAE: 0.347"></i></div>
+                                            <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">[Toxicity] NR-AhR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.862; F-measure: 0.573; Specificity: 0.858; Sensitivity: 0.896"></i></div>
+                                            <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">[Toxicity] NR-AR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.886; ACC: 0.89; F-measure: 0.348; Specificity: 0.896; Sensitivity: 0.731"></i></div>
+                                            <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">[Toxicity] NR-AR-LBD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.936; F-measure: 0.472; Specificity: 0.942; Sensitivity: 0.783"></i></div>
+                                            <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">[Toxicity] Respiratory <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.828; ACC: 0.764; F-measure: 0.514; Specificity: 0.732; Sensitivity: 0.786"></i></div>
+                                            <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">[Toxicity] SR-ARE <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.863; ACC: 0.827; F-measure: 0.469; Specificity: 0.85; Sensitivity: 0.701"></i></div>
+                                            <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">[Toxicity] SR-MMP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.927; ACC: 0.897; F-measure: 0.66; Specificity: 0.908; Sensitivity: 0.835"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <div class="ui selection dropdown" id="property_dropdown">
+                                        <input type="hidden" name="property1b" value="">
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text">None</div>
+                                        <div class="menu">
+                                            <div class="item" data-value="">None</div>
+                                            {% comment %} <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">[Basic] LogD7.4</div>
+                                            <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">[Basic] LogP</div>
+                                            <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">[Basic] LogS</div>
+                                            <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">[Absorption] Caco-2</div>
+                                            <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">[Absorption] Pgp-inhibitor</div>
+                                            <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">[Absorption] Pgp-substrate</div>
+                                            <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">[Absorption] F (30%)</div>
+                                            <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">[Distribution] PPB</div>
+                                            <div class="item" data-value="BBB" data-tippy-content="BBB penetration">[Distribution] BBB</div>
+                                            <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">[Distribution] vdss</div>
+                                            <div class="item" data-value="cyp1a2-inh">[Metabolism] CYP 1A2-inhibitor</div>
+                                            <div class="item" data-value="cyp2c19-inh">[Metabolism] CYP 2C19-inhibitor</div>
+                                            <div class="item" data-value="cyp2c9-inh">[Metabolism] CYP 2C9-inhibitor</div>
+                                            <div class="item" data-value="cyp2d6-inh">[Metabolism] CYP 2D6-inhibitor</div>
+                                            <div class="item" data-value="cyp2d6-sub">[Metabolism] CYP 2d6-substrate</div>
+                                            <div class="item" data-value="cyp3a4-inh">[Metabolism] CYP 3A4-inhibitor</div>
+                                            <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">[Excretion] T<sub>1/2</sub></div>
+                                            <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">[Toxicity] Ames</div>
+                                            <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">[Toxicity] BCF</div>
+                                            <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">[Toxicity] DILI</div>
+                                            <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">[Toxicity] EC</div>
+                                            <div class="item" data-value="ei" data-tippy-content="Eye Irritation">[Toxicity] EI</div>
+                                            <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">[Toxicity] FDAMDD</div>
+                                            <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">[Toxicity] H-HT-2</div>
+                                            <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">[Toxicity] hERG</div>
+                                            <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">[Toxicity] IGC50</div>
+                                            <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">[Toxicity] NR-AhR</div>
+                                            <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">[Toxicity] NR-AR</div>
+                                            <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">[Toxicity] NR-AR-LBD</div>
+                                            <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">[Toxicity] Respiratory</div>
+                                            <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">[Toxicity] SR-ARE</div>
+                                            <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">[Toxicity] SR-MMP</div> {% endcomment %}
+                                            <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">[Basic] LogD7.4 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.836; RMSE: 0.559; MAE: 0.427"></i></div>
+                                            <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">[Basic] LogP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.957; RMSE: 0.357; MAE: 0.256"></i></div>
+                                            <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">[Basic] LogS <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.863; RMSE: 0.812; MAE: 0.552"></i></div>
+                                            <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">[Absorption] Caco-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.733; RMSE: 0.364; MAE: 0.256"></i></div>
+                                            <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">[Absorption] Pgp-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.936; ACC: 0.877; F-measure: 0.843; Specificity: 0.825; Sensitivity: 0.991"></i></div>
+                                            <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">[Absorption] Pgp-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.828; F-measure: 0.830; Specificity: 0.835; Sensitivity: 0.821"></i></div>
+                                            <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">[Absorption] F (30%) <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.774; ACC: 0.747; F-measure: 0.572; Specificity: 0.871; Sensitivity: 0.501"></i></div>
+                                            <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">[Distribution] PPB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.734; RMSE: 0.135; MAE: 0.834"></i></div>
+                                            <div class="item" data-value="BBB" data-tippy-content="BBB penetration">[Distribution] BBB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.924; ACC: 0.843; F-measure: 0.863; Specificity: 0.803; Sensitivity: 0.873"></i></div>
+                                            <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">[Distribution] vdss <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.819; RMSE: 0.637; MAE: 0.371"></i></div>
+                                            <div class="item" data-value="cyp1a2-inh">[Metabolism] CYP 1A2-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.933; ACC: 0.859; F-measure: 0.847; Specificity: 0.844; Sensitivity: 0.871"></i></div>
+                                            <div class="item" data-value="cyp2c19-inh">[Metabolism] CYP 2C19-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.883; ACC: 0.814; F-measure: 0.799; Specificity: 0.811; Sensitivity: 0.817"></i></div>
+                                            <div class="item" data-value="cyp2c9-inh">[Metabolism] CYP 2C9-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.875; ACC: 0.810; F-measure: 0.715; Specificity: 0.719; Sensitivity: 0.855"></i></div>
+                                            <div class="item" data-value="cyp2d6-inh">[Metabolism] CYP 2D6-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.882; ACC: 0.882; F-measure: 0.647; Specificity: 0.557; Sensitivity: 0.98"></i></div>
+                                            <div class="item" data-value="cyp2d6-sub">[Metabolism] CYP 2d6-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.821; ACC: 0.748; F-measure: 0.748; Specificity: 0.756; Sensitivity: 0.741"></i></div>
+                                            <div class="item" data-value="cyp3a4-inh">[Metabolism] CYP 3A4-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.899; ACC: 0.818; F-measure: 0.778; Specificity: 0.775; Sensitivity: 0.848"></i></div>
+                                            <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">[Excretion] T<sub>1/2</sub> <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.801; ACC: 0.727; F-measure: 0.478; Specificity: 0.658; Sensitivity: 0.827"></i></div>
+                                            <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">[Toxicity] Ames <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.914; ACC: 0.841; F-measure: 0.860; Specificity: 0.807; Sensitivity: 0.868"></i></div>
+                                            <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">[Toxicity] BCF <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.775; RMSE: 0.648; MAE: 0.471"></i></div>
+                                            <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">[Toxicity] DILI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.912; ACC: 0.835; F-measure: 0.833; Specificity: 0.822; Sensitivity: 0.847"></i></div>
+                                            <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">[Toxicity] EC <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.99; ACC: 0.952; F-measure: 0.961; Specificity: 0.948; Sensitivity: 0.958"></i></div>
+                                            <div class="item" data-value="ei" data-tippy-content="Eye Irritation">[Toxicity] EI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.978; ACC: 0.942; F-measure: 0.961; Specificity: 0.850; Sensitivity: 0.973"></i></div>
+                                            <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">[Toxicity] FDAMDD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.843; ACC: 0.76; F-measure: 0.749; Specificity: 0.762; Sensitivity: 0.757"></i></div>
+                                            <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">[Toxicity] H-HT-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.776; ACC: 0.706; F-measure: 0.752; Specificity: 0.614; Sensitivity: 0.776"></i></div>
+                                            <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">[Toxicity] hERG <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.889; F-measure: 0.778; Specificity: 0.869; Sensitivity: 0.909"></i></div>
+                                            <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">[Toxicity] IGC50 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.784; RMSE: 0.489; MAE: 0.347"></i></div>
+                                            <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">[Toxicity] NR-AhR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.862; F-measure: 0.573; Specificity: 0.858; Sensitivity: 0.896"></i></div>
+                                            <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">[Toxicity] NR-AR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.886; ACC: 0.89; F-measure: 0.348; Specificity: 0.896; Sensitivity: 0.731"></i></div>
+                                            <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">[Toxicity] NR-AR-LBD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.936; F-measure: 0.472; Specificity: 0.942; Sensitivity: 0.783"></i></div>
+                                            <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">[Toxicity] Respiratory <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.828; ACC: 0.764; F-measure: 0.514; Specificity: 0.732; Sensitivity: 0.786"></i></div>
+                                            <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">[Toxicity] SR-ARE <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.863; ACC: 0.827; F-measure: 0.469; Specificity: 0.85; Sensitivity: 0.701"></i></div>
+                                            <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">[Toxicity] SR-MMP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.927; ACC: 0.897; F-measure: 0.66; Specificity: 0.908; Sensitivity: 0.835"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-evenly align-items-center">
+                                    <button class="ui primary button" id="submit-btn-1" type="submit" aria-label="Submit"
+                                            value="Submit" lay-submit lay-filter="submit1">
+                                        Submit
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>      
+
+                    <div class="card border-dark text-left ms-auto me-auto my-3" style="width: 100%">
+                        <div class="card-header">
+                            <i class="far fa-info-square"></i>
+                            Tip
+                        </div>
+                        <div class="card-body text-primary">
+                            <ul class="mb-0">
+                                <li style="list-style-type: disc">
+                                    <b>Before submitting</b>, users should prepare a valid SMILES in case of errors.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="draw" role="tabpanel" aria-labelledby="draw-tab">
+                <div class="download-content">
+                    <form class="ui form" action="{% url 'home:checkercal' %}" method="post" id="form2"
+                          class="border p-3 border-top-0 text-center">
+                        {% csrf_token %}
+                        {% if message %}
+                            <div class="alert alert-warning">{{ message }}</div>
+                        {% endif %}
+                        <div id="jsme_container" style="text-align: center;" class="pt-2"></div>
+
+                        <div class="field" style="margin-top: 2rem;">
+                            <label style="font-size: 1.2rem; font-weight: 600">Database: </label>
+                            <select class="ui selection dropdown" name="dataset2" style="width: 100%;">
+                                <option value="1">Experimental Database</option>
+                                <option value="2">Expand Database</option>
+                            </select>
+                        </div>
+                        <div class="field" style="margin-top: 2rem;">
+                            <label style="font-size: 1.2rem; font-weight: 600">Property: <i class="fas fa-info-circle"
+                                                                                            style="color: orange"
+                                                                                            data-tippy-content="Please do not choose more than two properties!"></i></label>
+                        </div>
+                        <div class="field">
+                            <div class="ui selection dropdown" id="property_dropdown">
+                                <input type="hidden" name="property2a" value="logd">
+                                <i class="dropdown icon"></i>
+                                <div class="text">[Basic] LogD7.4</div>
+                                <div class="menu">
+                                    <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">[Basic] LogD7.4 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.836; RMSE: 0.559; MAE: 0.427"></i></div>
+                                    <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">[Basic] LogP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.957; RMSE: 0.357; MAE: 0.256"></i></div>
+                                    <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">[Basic] LogS <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.863; RMSE: 0.812; MAE: 0.552"></i></div>
+                                    <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">[Absorption] Caco-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.733; RMSE: 0.364; MAE: 0.256"></i></div>
+                                    <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">[Absorption] Pgp-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.936; ACC: 0.877; F-measure: 0.843; Specificity: 0.825; Sensitivity: 0.991"></i></div>
+                                    <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">[Absorption] Pgp-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.828; F-measure: 0.830; Specificity: 0.835; Sensitivity: 0.821"></i></div>
+                                    <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">[Absorption] F (30%) <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.774; ACC: 0.747; F-measure: 0.572; Specificity: 0.871; Sensitivity: 0.501"></i></div>
+                                    <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">[Distribution] PPB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.734; RMSE: 0.135; MAE: 0.834"></i></div>
+                                    <div class="item" data-value="BBB" data-tippy-content="BBB penetration">[Distribution] BBB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.924; ACC: 0.843; F-measure: 0.863; Specificity: 0.803; Sensitivity: 0.873"></i></div>
+                                    <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">[Distribution] vdss <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.819; RMSE: 0.637; MAE: 0.371"></i></div>
+                                    <div class="item" data-value="cyp1a2-inh">[Metabolism] CYP 1A2-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.933; ACC: 0.859; F-measure: 0.847; Specificity: 0.844; Sensitivity: 0.871"></i></div>
+                                    <div class="item" data-value="cyp2c19-inh">[Metabolism] CYP 2C19-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.883; ACC: 0.814; F-measure: 0.799; Specificity: 0.811; Sensitivity: 0.817"></i></div>
+                                    <div class="item" data-value="cyp2c9-inh">[Metabolism] CYP 2C9-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.875; ACC: 0.810; F-measure: 0.715; Specificity: 0.719; Sensitivity: 0.855"></i></div>
+                                    <div class="item" data-value="cyp2d6-inh">[Metabolism] CYP 2D6-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.882; ACC: 0.882; F-measure: 0.647; Specificity: 0.557; Sensitivity: 0.98"></i></div>
+                                    <div class="item" data-value="cyp2d6-sub">[Metabolism] CYP 2d6-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.821; ACC: 0.748; F-measure: 0.748; Specificity: 0.756; Sensitivity: 0.741"></i></div>
+                                    <div class="item" data-value="cyp3a4-inh">[Metabolism] CYP 3A4-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.899; ACC: 0.818; F-measure: 0.778; Specificity: 0.775; Sensitivity: 0.848"></i></div>
+                                    <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">[Excretion] T<sub>1/2</sub> <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.801; ACC: 0.727; F-measure: 0.478; Specificity: 0.658; Sensitivity: 0.827"></i></div>
+                                    <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">[Toxicity] Ames <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.914; ACC: 0.841; F-measure: 0.860; Specificity: 0.807; Sensitivity: 0.868"></i></div>
+                                    <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">[Toxicity] BCF <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.775; RMSE: 0.648; MAE: 0.471"></i></div>
+                                    <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">[Toxicity] DILI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.912; ACC: 0.835; F-measure: 0.833; Specificity: 0.822; Sensitivity: 0.847"></i></div>
+                                    <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">[Toxicity] EC <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.99; ACC: 0.952; F-measure: 0.961; Specificity: 0.948; Sensitivity: 0.958"></i></div>
+                                    <div class="item" data-value="ei" data-tippy-content="Eye Irritation">[Toxicity] EI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.978; ACC: 0.942; F-measure: 0.961; Specificity: 0.850; Sensitivity: 0.973"></i></div>
+                                    <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">[Toxicity] FDAMDD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.843; ACC: 0.76; F-measure: 0.749; Specificity: 0.762; Sensitivity: 0.757"></i></div>
+                                    <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">[Toxicity] H-HT-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.776; ACC: 0.706; F-measure: 0.752; Specificity: 0.614; Sensitivity: 0.776"></i></div>
+                                    <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">[Toxicity] hERG <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.889; F-measure: 0.778; Specificity: 0.869; Sensitivity: 0.909"></i></div>
+                                    <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">[Toxicity] IGC50 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.784; RMSE: 0.489; MAE: 0.347"></i></div>
+                                    <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">[Toxicity] NR-AhR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.862; F-measure: 0.573; Specificity: 0.858; Sensitivity: 0.896"></i></div>
+                                    <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">[Toxicity] NR-AR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.886; ACC: 0.89; F-measure: 0.348; Specificity: 0.896; Sensitivity: 0.731"></i></div>
+                                    <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">[Toxicity] NR-AR-LBD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.936; F-measure: 0.472; Specificity: 0.942; Sensitivity: 0.783"></i></div>
+                                    <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">[Toxicity] Respiratory <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.828; ACC: 0.764; F-measure: 0.514; Specificity: 0.732; Sensitivity: 0.786"></i></div>
+                                    <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">[Toxicity] SR-ARE <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.863; ACC: 0.827; F-measure: 0.469; Specificity: 0.85; Sensitivity: 0.701"></i></div>
+                                    <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">[Toxicity] SR-MMP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.927; ACC: 0.897; F-measure: 0.66; Specificity: 0.908; Sensitivity: 0.835"></i></div>
+                                    {% comment %} <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">[Basic] LogD7.4</div>
+                                    <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">[Basic] LogP</div>
+                                    <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">[Basic] LogS</div>
+                                    <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">[Absorption] Caco-2</div>
+                                    <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">[Absorption] Pgp-inhibitor</div>
+                                    <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">[Absorption] Pgp-substrate</div>
+                                    <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">[Absorption] F (30%)</div>
+                                    <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">[Distribution] PPB</div>
+                                    <div class="item" data-value="BBB" data-tippy-content="BBB penetration">[Distribution] BBB</div>
+                                    <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">[Distribution] vdss</div>
+                                    <div class="item" data-value="cyp1a2-inh">[Metabolism] CYP 1A2-inhibitor</div>
+                                    <div class="item" data-value="cyp2c19-inh">[Metabolism] CYP 2C19-inhibitor</div>
+                                    <div class="item" data-value="cyp2c9-inh">[Metabolism] CYP 2C9-inhibitor</div>
+                                    <div class="item" data-value="cyp2d6-inh">[Metabolism] CYP 2D6-inhibitor</div>
+                                    <div class="item" data-value="cyp2d6-sub">[Metabolism] CYP 2d6-substrate</div>
+                                    <div class="item" data-value="cyp3a4-inh">[Metabolism] CYP 3A4-inhibitor</div>
+                                    <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">[Excretion] T<sub>1/2</sub></div>
+                                    <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">[Toxicity] Ames</div>
+                                    <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">[Toxicity] BCF</div>
+                                    <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">[Toxicity] DILI</div>
+                                    <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">[Toxicity] EC</div>
+                                    <div class="item" data-value="ei" data-tippy-content="Eye Irritation">[Toxicity] EI</div>
+                                    <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">[Toxicity] FDAMDD</div>
+                                    <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">[Toxicity] H-HT-2</div>
+                                    <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">[Toxicity] hERG</div>
+                                    <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">[Toxicity] IGC50</div>
+                                    <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">[Toxicity] NR-AhR</div>
+                                    <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">[Toxicity] NR-AR</div>
+                                    <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">[Toxicity] NR-AR-LBD</div>
+                                    <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">[Toxicity] Respiratory</div>
+                                    <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">[Toxicity] SR-ARE</div>
+                                    <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">[Toxicity] SR-MMP</div> {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui selection dropdown" id="property_dropdown">
+                                <input type="hidden" name="property2b" value="">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">None</div>
+                                <div class="menu">
+                                    <div class="item" data-value="">None</div>
+                                    <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">[Basic] LogD7.4 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.836; RMSE: 0.559; MAE: 0.427"></i></div>
+                                    <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">[Basic] LogP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.957; RMSE: 0.357; MAE: 0.256"></i></div>
+                                    <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">[Basic] LogS <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.863; RMSE: 0.812; MAE: 0.552"></i></div>
+                                    <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">[Absorption] Caco-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.733; RMSE: 0.364; MAE: 0.256"></i></div>
+                                    <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">[Absorption] Pgp-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.936; ACC: 0.877; F-measure: 0.843; Specificity: 0.825; Sensitivity: 0.991"></i></div>
+                                    <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">[Absorption] Pgp-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.828; F-measure: 0.830; Specificity: 0.835; Sensitivity: 0.821"></i></div>
+                                    <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">[Absorption] F (30%) <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.774; ACC: 0.747; F-measure: 0.572; Specificity: 0.871; Sensitivity: 0.501"></i></div>
+                                    <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">[Distribution] PPB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.734; RMSE: 0.135; MAE: 0.834"></i></div>
+                                    <div class="item" data-value="BBB" data-tippy-content="BBB penetration">[Distribution] BBB <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.924; ACC: 0.843; F-measure: 0.863; Specificity: 0.803; Sensitivity: 0.873"></i></div>
+                                    <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">[Distribution] vdss <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.819; RMSE: 0.637; MAE: 0.371"></i></div>
+                                    <div class="item" data-value="cyp1a2-inh">[Metabolism] CYP 1A2-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.933; ACC: 0.859; F-measure: 0.847; Specificity: 0.844; Sensitivity: 0.871"></i></div>
+                                    <div class="item" data-value="cyp2c19-inh">[Metabolism] CYP 2C19-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.883; ACC: 0.814; F-measure: 0.799; Specificity: 0.811; Sensitivity: 0.817"></i></div>
+                                    <div class="item" data-value="cyp2c9-inh">[Metabolism] CYP 2C9-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.875; ACC: 0.810; F-measure: 0.715; Specificity: 0.719; Sensitivity: 0.855"></i></div>
+                                    <div class="item" data-value="cyp2d6-inh">[Metabolism] CYP 2D6-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.882; ACC: 0.882; F-measure: 0.647; Specificity: 0.557; Sensitivity: 0.98"></i></div>
+                                    <div class="item" data-value="cyp2d6-sub">[Metabolism] CYP 2d6-substrate <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.821; ACC: 0.748; F-measure: 0.748; Specificity: 0.756; Sensitivity: 0.741"></i></div>
+                                    <div class="item" data-value="cyp3a4-inh">[Metabolism] CYP 3A4-inhibitor <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.899; ACC: 0.818; F-measure: 0.778; Specificity: 0.775; Sensitivity: 0.848"></i></div>
+                                    <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">[Excretion] T<sub>1/2</sub> <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.801; ACC: 0.727; F-measure: 0.478; Specificity: 0.658; Sensitivity: 0.827"></i></div>
+                                    <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">[Toxicity] Ames <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.914; ACC: 0.841; F-measure: 0.860; Specificity: 0.807; Sensitivity: 0.868"></i></div>
+                                    <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">[Toxicity] BCF <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.775; RMSE: 0.648; MAE: 0.471"></i></div>
+                                    <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">[Toxicity] DILI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.912; ACC: 0.835; F-measure: 0.833; Specificity: 0.822; Sensitivity: 0.847"></i></div>
+                                    <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">[Toxicity] EC <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.99; ACC: 0.952; F-measure: 0.961; Specificity: 0.948; Sensitivity: 0.958"></i></div>
+                                    <div class="item" data-value="ei" data-tippy-content="Eye Irritation">[Toxicity] EI <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.978; ACC: 0.942; F-measure: 0.961; Specificity: 0.850; Sensitivity: 0.973"></i></div>
+                                    <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">[Toxicity] FDAMDD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.843; ACC: 0.76; F-measure: 0.749; Specificity: 0.762; Sensitivity: 0.757"></i></div>
+                                    <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">[Toxicity] H-HT-2 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.776; ACC: 0.706; F-measure: 0.752; Specificity: 0.614; Sensitivity: 0.776"></i></div>
+                                    <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">[Toxicity] hERG <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.889; F-measure: 0.778; Specificity: 0.869; Sensitivity: 0.909"></i></div>
+                                    <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">[Toxicity] IGC50 <i class="fas fa-info-circle" style="color: grey" data-tippy-content="R<sup>2</sup>: 0.784; RMSE: 0.489; MAE: 0.347"></i></div>
+                                    <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">[Toxicity] NR-AhR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.943; ACC: 0.862; F-measure: 0.573; Specificity: 0.858; Sensitivity: 0.896"></i></div>
+                                    <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">[Toxicity] NR-AR <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.886; ACC: 0.89; F-measure: 0.348; Specificity: 0.896; Sensitivity: 0.731"></i></div>
+                                    <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">[Toxicity] NR-AR-LBD <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.915; ACC: 0.936; F-measure: 0.472; Specificity: 0.942; Sensitivity: 0.783"></i></div>
+                                    <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">[Toxicity] Respiratory <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.828; ACC: 0.764; F-measure: 0.514; Specificity: 0.732; Sensitivity: 0.786"></i></div>
+                                    <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">[Toxicity] SR-ARE <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.863; ACC: 0.827; F-measure: 0.469; Specificity: 0.85; Sensitivity: 0.701"></i></div>
+                                    <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">[Toxicity] SR-MMP <i class="fas fa-info-circle" style="color: grey" data-tippy-content="AUC: 0.927; ACC: 0.897; F-measure: 0.66; Specificity: 0.908; Sensitivity: 0.835"></i></div>
+                                    {% comment %} <div class="item" data-value="logd" data-tippy-content="The logarithm of the n-octanol/water distribution coefficients at pH=7.4">[Basic] LogD7.4</div>
+                                    <div class="item" data-value="logp" data-tippy-content="The logarithm of the n-octanol/water distribution coefficient">[Basic] LogP</div>
+                                    <div class="item" data-value="logs" data-tippy-content="The logarithm of aqueous solubility value">[Basic] LogS</div>
+                                    <div class="item" data-value="Caco-2" data-tippy-content="Caco-2 Permeability">[Absorption] Caco-2</div>
+                                    <div class="item" data-value="pgp-inh" data-tippy-content="The inhibitor of P-glycoprotein">[Absorption] Pgp-inhibitor</div>
+                                    <div class="item" data-value="pgp-sub" data-tippy-content="Pgp substrate">[Absorption] Pgp-substrate</div>
+                                    <div class="item" data-value="f30" data-tippy-content="The human oral bioavailability 30%">[Absorption] F (30%)</div>
+                                    <div class="item" data-value="PPB" data-tippy-content="Plasma protein binding">[Distribution] PPB</div>
+                                    <div class="item" data-value="BBB" data-tippy-content="BBB penetration">[Distribution] BBB</div>
+                                    <div class="item" data-value="vdss" data-tippy-content="Volume Distribution">[Distribution] vdss</div>
+                                    <div class="item" data-value="cyp1a2-inh">[Metabolism] CYP 1A2-inhibitor</div>
+                                    <div class="item" data-value="cyp2c19-inh">[Metabolism] CYP 2C19-inhibitor</div>
+                                    <div class="item" data-value="cyp2c9-inh">[Metabolism] CYP 2C9-inhibitor</div>
+                                    <div class="item" data-value="cyp2d6-inh">[Metabolism] CYP 2D6-inhibitor</div>
+                                    <div class="item" data-value="cyp2d6-sub">[Metabolism] CYP 2d6-substrate</div>
+                                    <div class="item" data-value="cyp3a4-inh">[Metabolism] CYP 3A4-inhibitor</div>
+                                    <div class="item" data-value="t12" data-tippy-content="The half-life of a drug">[Excretion] T<sub>1/2</sub></div>
+                                    <div class="item" data-value="AMES" data-tippy-content="The Ames test for mutagenicity">[Toxicity] Ames</div>
+                                    <div class="item" data-value="BCF" data-tippy-content="Skin sensitization">[Toxicity] BCF</div>
+                                    <div class="item" data-value="Dili" data-tippy-content="Drug-induced liver injury">[Toxicity] DILI</div>
+                                    <div class="item" data-value="ec" data-tippy-content="Eye Corrosion">[Toxicity] EC</div>
+                                    <div class="item" data-value="ei" data-tippy-content="Eye Irritation">[Toxicity] EI</div>
+                                    <div class="item" data-value="fdamdd" data-tippy-content="The maximum recommended daily dose">[Toxicity] FDAMDD</div>
+                                    <div class="item" data-value="h-ht2" data-tippy-content="Human hepatotoxicity">[Toxicity] H-HT-2</div>
+                                    <div class="item" data-value="herg" data-tippy-content="The human ether-a-go-go related gene">[Toxicity] hERG</div>
+                                    <div class="item" data-value="igc50" data-tippy-content="48 hour Tetrahymena pyriformis IGC50">[Toxicity] IGC50</div>
+                                    <div class="item" data-value="nr-ahr" data-tippy-content="Androgen receptor">[Toxicity] NR-AhR</div>
+                                    <div class="item" data-value="nr-ar" data-tippy-content="Aryl hydrocarbon receptor">[Toxicity] NR-AR</div>
+                                    <div class="item" data-value="nr-ar-lbd" data-tippy-content="Androgen receptor ligand-binding domain">[Toxicity] NR-AR-LBD</div>
+                                    <div class="item" data-value="respiratory" data-tippy-content="Respiratory Toxicity">[Toxicity] Respiratory</div>
+                                    <div class="item" data-value="sr-are" data-tippy-content="Antioxidant response element">[Toxicity] SR-ARE</div>
+                                    <div class="item" data-value="sr-mmp" data-tippy-content="Mitochondrial membrane potential">[Toxicity] SR-MMP</div> {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="mol_input" name="mol" value="">
+                        <input type="hidden" id="method" value="2" name="method">
+
+                        <div class="text-center">
+                            <button class="ui primary button" id="submit-btn-2" type="submit" aria-label="Submit"
+                                    value="Submit" lay-submit lay-filter="submit2">
+                                Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="ui basic modal" id="loading-btn">
+    <div class="content text-center">
+        <div class="content-box">
+            <div class="load">
+                <hr/>
+                <hr/>
+                <hr/>
+                <hr/>
+            </div>
+            <h2 style="color: white">Please Wait...</h2>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'common/popperjs/core/dist/umd/popper.min.js' %}"></script>
+<script src="{% static 'common/tippyjs/dist/tippy-bundle.umd.min.js' %}"></script>
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>
+<script>
+    var loading_modal = $('#loading-btn').modal('attach events', '#submit-btn-1').modal('attach events', '#submit-btn-2');
+
+    $('.ui.selection.dropdown').dropdown();
+
+    $('.ui.checkbox').checkbox();
+    $('select.dropdown').dropdown();
+    $('.ui.form').form({
+        fields: {
+            smiles: {
+                identifier: 'smiles',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: 'Please enter SMILES'
+                    }
+                ]
+            },
+        }
+    });
+
+    tippy('[data-tippy-content]', {
+        maxWidth: 'none',
+        role: 'tooltip',
+        allowHTML: true,
+        placement: 'top',
+    });
+
+    function jsmeOnLoad() {
+        jsmeApplet = new JSApplet.JSME("jsme_container", "380px", "340px", {
+            "text-align": "center",
+        });
+    }
+
+    function addexample() {
+        $('#smiles').val('CC(C)OC(=O)CC(=O)CSC1=C(C=C2CCCC2=N1)C#N');
+    }
+
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+    layui.use('form', function () {
+        var form = layui.form;
+        form.on('submit(submit1)', function (data) {
+            {% comment %} if ($('#smiles').val() === '') {
+                layer.msg('Please enter SMILES!');
+                console.log('asdasda');
+                $('#loading-btn').modal('hide');
+            } else { {% endcomment %}
+            Validator.Validate(document.getElementById('form1'), 3, 1);
+            {% comment %} } {% endcomment %}
+            return false;
+        });
+        form.on('submit(submit2)', function (data) {
+            var molFile = jsmeApplet.molFile();
+            $('#mol_input').attr('value', molFile);
+            Validator.Validate(document.getElementById('form2'), 3, 2);
+            return false;
+        });
+    });
+
+    $('#form1 .ui.checkbox').checkbox({
+        onChecked: function () {
+            if ($('input[type=checkbox][name=property1]:checked').length > 2) {
+                layer.msg('Please do not choose more than two properties!');
+            }
+        },
+    });
+    $('#form2 .ui.checkbox').checkbox({
+        onChecked: function () {
+            if ($('input[type=checkbox][name=property2]:checked').length > 2) {
+                layer.msg('Please do not choose more than two properties!');
+            }
+        },
+    });
+
+    function reset1() {
+        $('#form1').reset();
+    }
+
+    function progress(b, s, method) {
+        var opts = {
+            lines: 15, // The number of lines to draw
+            length: 0, // The length of each line
+            width: 8, // The line thickness
+            radius: 17, // The radius of the inner circle
+            corners: 1, // Corner roundness (0..1)
+            rotate: 38, // The rotation offset
+            direction: 1, // 1: clockwise, -1: counterclockwise
+            color: '#000', // #rgb or #rrggbb or array of colors
+            speed: 1.5, // Rounds per second
+            trail: 37, // Afterglow percentage
+            shadow: false, // Whether to render a shadow
+            hwaccel: false, // Whether to use hardware acceleration
+            className: 'spinner', // The CSS class to assign to the spinner
+            zIndex: 2e9, // The z-index (defaults to 2000000000)
+            top: 'auto', // Top position relative to parent in px
+            left: 'auto' // Left position relative to parent in px
+        };
+        document.getElementById(s).submit();
+    }
+
+</script>

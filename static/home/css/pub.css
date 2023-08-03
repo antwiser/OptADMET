@@ -1,0 +1,16 @@
+.layui-panel {
+    background: #E7E6E6;
+    color: #000000;
+    font-weight: bold;
+    font-family: 'Arial', serif;
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.red-font {
+    color: #e42c64;
+}
+
+#smartsImg {
+    max-width: 200px;
+}

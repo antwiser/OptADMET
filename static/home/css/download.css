@@ -1,0 +1,88 @@
+#data-header {
+    background-color: #3D4D68;
+    opacity: .9;
+    padding: 10px;
+    justify-content: space-between;
+}
+
+.nav-link {
+    /*color: #fff;*/
+    /*box-shadow: 0 0 0 2px #fff inset !important;*/
+    /*background: transparent none;*/
+}
+
+.ui.inverted.button.active:focus {
+    background: #fff;
+    border-color: #fff;
+}
+
+.nav-item {
+    color: #fff;
+    box-shadow: 0 0 0 2px #fff inset !important;
+    background: transparent none;
+    border-radius: .28571429rem;
+}
+
+.ui.button {
+    margin: 0;
+}
+
+.title {
+    font-size: 1.3rem;
+    color: #fff;
+    font-weight: 700;
+}
+
+.download-content {
+    margin-top: 2rem;
+}
+
+.layui-tab-title {
+    /*white-space: nowrap;*/
+    font-size: 0;
+    border-bottom-width: 0;
+    transition: all .2s;
+    -webkit-transition: all .2s;
+    margin-bottom: 0;
+}
+
+.layui-tab-title .layui-this:after {
+    border-width: 0;
+    border-style: none;
+}
+
+
+.table > :not(:last-child) > :last-child > * {
+    border-bottom-color: inherit;
+}
+
+.ui.table thead th {
+    background-color: #3D4D68;
+    opacity: .9;
+    border-radius: 0;
+    color: #fff;
+}
+
+.ui.table thead tr:first-child > th:first-child, .ui.table thead tr:first-child > th:last-child {
+    border-radius: 0;
+}
+
+.ui.celled.table tr th {
+    border-left-color: #fff;
+}
+
+/*.layui-tab-title .layui-this .ui.inverted.button {*/
+/*    box-shadow: 0 0 0 2px #fff inset !important;*/
+/*    background: #fff;*/
+/*    color: #3D4D68;*/
+/*    text-shadow: none !important;*/
+/*}*/
+
+/*.ui.tabular.menu {*/
+/*    margin-top: 0;*/
+/*}*/
+
+/*.ui.tabular.menu .active.item {*/
+/*    background: none;*/
+/*    border: none;*/
+/*}*/

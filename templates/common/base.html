@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="shortcut icon" href="/deploy/optadmet/static/favicon.ico">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{% block title %}OptADMET{% endblock %}</title>
+
+{#    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"#}
+{#          rel="stylesheet">#}
+
+    <link rel="stylesheet" href="{% static 'common/layui-v2.6.8/layui/css/layui.css' %}">
+    <script src="{% static 'common/layui-v2.6.8/layui/layui.js' %}"></script>
+
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'common/aos/aos.css' %}">
+    <link href="{% static 'common/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'common/bootstrap-icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'common/boxicons/css/boxicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'common/glightbox/css/glightbox.min.css' %}">
+    <link rel="stylesheet" href="{% static 'common/remixicon/remixicon.css' %}">
+    <link rel="stylesheet" href="{% static 'common/swiper/swiper-bundle.min.css' %}">
+
+    {% comment %} <link rel="stylesheet" href="{% static 'common/DataTables/datatables.min.css' %}"> {% endcomment %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/duyplus/fontawesome-pro/css/all.min.css">
+
+
+    <script src="{% static 'common/jquery/jquery.min.js' %}"></script>
+{#    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>#}
+{#    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>#}
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    {% comment %} <script src="{% static 'common/DataTables/datatables.min.js' %}"></script> {% endcomment %}
+    {#    <script src="{% static 'home/js/style.js' %}"></script>#}
+
+
+    {# nav.html #}
+    {% block navres %}
+        {#        <link rel="stylesheet" href="{% static 'home/css/nav.css' %}">#}
+    {% endblock %}
+
+    {# footer.html #}
+    <link rel="stylesheet" href="{% static 'home/css/footer.css' %}">
+    {# backtotop.html #}
+    {#    <link rel="stylesheet" href="{% static 'common/backtotop/css/unicons.css' %}">#}
+    {#    <link rel="stylesheet" href="{% static 'common/backtotop/css/style.css' %}">#}
+    {#    <script src="{% static 'common/backtotop/js/style.js' %}"></script>#}
+    {##}
+    {# banner.html #}
+    {#    <link rel="stylesheet" href="{% static 'common/banner/css/style.css' %}">#}
+    {##}
+</head>
+<body>
+
+<div class="antin-container">
+    {% block nav %}
+        {% include 'common/nav.html' %}
+    {% endblock %}
+    {#    {% block banner %}#}
+    {#        {% include 'share_layout/banner.html' %}#}
+    {#    {% endblock %}#}
+
+    <!--[if lt IE 7]>
+    <p class="chromeframe">You are using a</p><p class="chromeframe">n <strong>outdated</strong> browser. Please <a
+            href="http://browsehappy.com/">upgrade your browser</a> or <a
+            href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your
+        experience.</p>
+    <![endif]-->
+
+    <div class="antin-contain">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% block footer %}
+        {% include 'common/footer.html' %}
+    {% endblock %}
+
+    {% include 'common/backtotop.html' %}
+
+</div>
+{#<script src="{% static 'common/jquery/jquery.min.js' %}"></script>#}
+{#<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>#}
+{#<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap5.min.js"></script>#}
+<script src="{% static 'common/aos/aos.js' %}"></script>
+<script src="{% static 'common/bootstrap-5.0.0-dist/js/bootstrap.min.js' %}" async="async"></script>
+<script src="{% static 'common/glightbox/js/glightbox.min.js' %}"></script>
+<script src="{% static 'common/isotope-layout/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'common/swiper/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'common/purecounter/purecounter.js' %}"></script>
+<script src="{% static 'home/js/style.js' %}"></script>
+
+
+
+</body>
+{% block script %}{% endblock %}
+</html>

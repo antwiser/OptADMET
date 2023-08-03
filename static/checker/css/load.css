@@ -1,0 +1,76 @@
+#loading-btn {
+    background: none;
+    box-shadow: none;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.ui.modal > .content {
+    height: 100%;
+}
+
+.content-box {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.load {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+}
+
+.load hr {
+    border: 0;
+    margin: 0;
+    width: 40%;
+    height: 40%;
+    position: absolute;
+    border-radius: 50%;
+    animation: spin 2s ease infinite;
+    border-bottom: none !important;
+    opacity: .8;
+}
+
+.load :first-child {
+    /*background: #19A68C;*/
+    background: #F15431;
+    animation-delay: -1.5s
+}
+
+.load :nth-child(2) {
+    /*background: #F63D3A;*/
+    background: #83BC32;
+    animation-delay: -1s
+}
+
+.load :nth-child(3) {
+    /*background: #FDA543;*/
+    background: #14A6EC;
+    animation-delay: -0.5s
+}
+
+.load :last-child {
+    background: #FEBA38;
+    /*background: #193B48*/
+}
+
+@keyframes spin {
+    0%, 100% {
+        transform: translate(0)
+    }
+    25% {
+        transform: translate(160%)
+    }
+    50% {
+        transform: translate(160%, 160%)
+    }
+    75% {
+        transform: translate(0, 160%)
+    }
+}

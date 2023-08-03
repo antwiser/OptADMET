@@ -1,0 +1,270 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'database/css/general.css' %}">
+<link rel="stylesheet" href="{% static 'database/css/detail.css' %}">
+<script src="{% static 'common/echarts-5.1.2/echarts.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'common/datatable.css' %}">
+<style>
+    .ui.table {
+        border: none;
+    }
+
+    .table > :not(:last-child) > :last-child > * {
+        border-bottom-color: rgba(34, 36, 38, .1);
+    }
+</style>
+<main id="main">
+    <div class="layui-col-md-offset1 layui-col-md10 mb-4 ps-5 pe-5">
+        <div class="block" id="information">
+            <h2>Information</h2>
+            <div class="key-value">
+                <table class="layui-table mt-2">
+                    <tbody>
+                    <tr></tr>
+                    <tr>
+                        <td class="key">Transformation</td>
+                        <td class="value" id="transformation_svg">
+                            {{ svg|safe }}
+                            {% comment %} <img src="/deploy/optadmet/static/media/datas/Pre_structure/{{ id }}.png" alt=""
+                                 class="" data-bs-toggle="modal" data-bs-target="#transformation_modal"
+                                 style="cursor: pointer">
+                            <div class="modal fade" id="transformation_modal" tabindex="-1"
+                                 aria-labelledby="transformation_modal-label"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-xl modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <img src="/deploy/optadmet/static/media/datas/Pre_structure/{{ id }}.png"
+                                             alt="" class="">
+                                    </div>
+                                </div>
+                            </div> {% endcomment %}
+                        </td>
+                        <td class="key">Left Fragment</td>
+                        <td class="value">
+                            <div class="text-center mt-0 mb-2 structure">
+                                {{ left_fragment|safe }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="key">ID</td>
+                        <td class="value">
+                            {{ structure_info.structure_global_id }}
+                        </td>
+                        <td class="key">Right Fragment</td>
+                        <td class="value">
+                            <div class="text-center mt-0 mb-2 structure">
+                                {{ right_fragment|safe }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="key">
+                            Global rule(s)
+                        </td>
+                        <td class="value" colspan="3">
+                            <table class="ui selectable table" id="global-table">
+                                <thead>
+                                <tr>
+                                    <th style="border-left: 1px solid rgba(34,36,38,.1);">ID</th>
+                                    <th>Property</th>
+                                    <th>Credibility <i class="fas fa-info-square"
+                                                       data-tippy-content="Qualified (didn’t pass the statistical significance test) and High (passed the statistical significance test)."></i>
+                                    </th>
+                                    <th>Variance <i class="fas fa-info-square"
+                                                    data-tippy-content="The index of overall property change of a specific transformation."></i>
+                                    </th>
+                                    <th>Pairs</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="key">
+                            Local rule(s)
+                        </td>
+                        <td class="value" colspan="3">
+                            <table class="ui selectable table" id="local-table">
+                                <thead>
+                                <tr>
+                                    <th style="border-left: 1px solid rgba(34,36,38,.1);">ID</th>
+                                    <th>Environment <i class="fas fa-info-square"
+                                                       data-tippy-content="The localized atom of the transform"></i>
+                                    </th>
+                                    <th>Property</th>
+                                    <th>Variance <i class="fas fa-info-square"
+                                                    data-tippy-content="The index of overall property change of a specific transformation."></i>
+                                    </th>
+                                    <th>Pairs</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="{% static 'common/popperjs/core/dist/umd/popper.min.js' %}"></script>
+<script src="{% static 'common/tippyjs/dist/tippy-bundle.umd.min.js' %}"></script>
+<script>
+    tippy('[data-tippy-content]', {
+        maxWidth: 'none',
+        role: 'tooltip',
+        allowHTML: true,
+        placement: 'right',
+    });
+
+    function set_datatable_data() {
+        let request_url = '/deploy/optadmet/optadmet/pglobal-data-source/' + "{{ structure_info.structure_global_id }}" + '/';
+        var table = $('#global-table').DataTable({
+            "pageLength": 5,
+            "aLengthMenu": [5, 10, 20],
+            "autoWidth": false,
+            {#stateSave: true,#}
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+            },
+            data: '',
+            "columns": [
+                {
+                    "data": "transformation_global_ID", width: "20%", 'render': function (data, type, full, meta) {
+                        return '<a href="/deploy/optadmet/optadmet/pgdetail/' + full.transformation_global_ID + '/">' + full.transformation_global_ID + '</a>'
+                    }
+                }, {
+                    "data": "null", width: "20%", 'render': function (data, type, full, meta) {
+                        return full.property;
+                    }
+                }, {
+                    "data": "statistical_significance", width: "20%", 'render': function (data, type, full, meta) {
+                        if (full.statistical_significance === 1) {
+                            return '<span class="badge rounded-pill" style="background-color: #83BC32;">High</span>';
+                        } else {
+                            return '<span class="badge rounded-pill" style="background-color: #14A6EC;">Qualified</span>';
+                        }
+                    }
+                }, {
+                    "data": "variance", width: "20%", 'render': function (data, type, full, meta) {
+                        if (full.variance === 1) {
+                            return '<span class="badge rounded-pill" style="background-color:#83BC32;">increase</span>';
+                        } else if (full.variance === 2) {
+                            return '<span class="badge rounded-pill" style="background-color:#14A6EC;">decrease</span>';
+                        } else {
+                            return '<span class="badge rounded-pill" style="background-color:orange;">no change</span>';
+                        }
+                    }
+                }, {
+                    "data": "count", width: "20%", 'render': function (data, type, full, meta) {
+                        return full.count;
+                    }
+                }
+            ],
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "processing": "Loading...",
+                "searchPlaceholder": "Search by Drugbank ID",
+            },
+            "ordering": false,
+            "searching": false,
+        });
+    }
+
+    function set_local_datatable_data() {
+        let request_url = '/deploy/optadmet/optadmet/pldata-source/' + "{{ structure_info.structure_global_id }}" + '/';
+        var table = $('#local-table').DataTable({
+            "pageLength": 5,
+            "aLengthMenu": [5, 10, 20],
+            "autoWidth": false,
+            {#stateSave: true,#}
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+            },
+            data: '',
+            "columns": [
+                {
+                    "data": "transformation_global_ID", 'render': function (data, type, full, meta) {
+                        return '<a href="/deploy/optadmet/optadmet/pldetail/' + full.transformation_local_id + '/">' + full.transformation_local_id + '</a>'
+                    }
+                }, {
+                    "data": "null", 'render': function (data, type, full, meta) {
+                        let html_text = '';
+                        html_text += '<a class="ui label" style="background-color:#666699;color: #fff">' + full.env_1 + '</a>';
+                        if (full.env_2 !== '[none]') {
+                            html_text += '<a class="ui label" style="background-color:#996699;color: #fff">' + full.env_2 + '</a>';
+                        }
+                        if (full.env_3 !== '[none]') {
+                            html_text += '<a class="ui label" style="background-color:#CC99CC;color: #fff">' + full.env_3 + '</a>';
+                        }
+                        return html_text;
+                    }
+                }, {
+                    "data": "null", 'render': function (data, type, full, meta) {
+                        return full.property;
+                    }
+                },
+                {
+                    "data": "variance", 'render': function (data, type, full, meta) {
+                        if (full.variance === 1) {
+                            return '<span class="badge rounded-pill" style="background-color:#83BC32;">increase</span>';
+                        } else if (full.variance === 2) {
+                            return '<span class="badge rounded-pill" style="background-color:#14A6EC;">decrease</span>';
+                        } else {
+                            return '<span class="badge rounded-pill" style="background-color:orange;">no change</span>';
+                        }
+                    }
+                }, {
+                    "data": "count", 'render': function (data, type, full, meta) {
+                        return full.count;
+                    }
+                }
+            ],
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "processing": "Loading...",
+                "searchPlaceholder": "Search by Drugbank ID",
+            },
+            "ordering": false,
+            "searching": false,
+        });
+    }
+
+    $(document).ready(function () {
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}',}
+        });
+        set_datatable_data();
+        set_local_datatable_data();
+    });
+</script>

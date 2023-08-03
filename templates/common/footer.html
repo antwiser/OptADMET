@@ -1,0 +1,77 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'common/footer/css/xui.css' %}">
+<!-- ======= Footer ======= -->
+<footer id="footer" style="">
+    <div class="footer-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 footer-info">
+                    <h3>About OptADMET</h3>
+                    <p style="text-align: justify;color:'#CCC'">
+                        OptADMET is the integrated chemical transformation rule platform covering 32 important ADMET
+                        properties, which provides multiple-property rules and lead optimization direction. It is
+                        believed that this webserver promises to be a powerful approach to aid multidimensional
+                        optimization.</p>
+                </div>
+
+                <div class="col-lg-3 col-md-6 footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><i class="bx bx-chevron-right"></i> <a href="{% url 'home:contact' %}">Contact Us</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="{% url 'home:pub' %}">Publications</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="{% url 'home:tutorials' %}">Help Tutorials</a></li>
+                        <li><i class="bx bx-chevron-right"></i>
+                            <script type="text/javascript"
+                                    src="//rf.revolvermaps.com/0/0/9.js?i=5gsgpjluar4&amp;t=Live%20Statistics"
+                                    async="async"></script>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 footer-links">
+                    <h4>Software</h4>
+                    <table class="xtable xnobor-all">
+                        <tr>
+                            <td>
+                                <a href="https://www.python.org/" target="_blank">
+                                    <img class="img-thumbnail" src="{% static 'common/footer/imgs/python-logo.png' %}"
+                                         alt="">
+                                </a>
+                            </td>
+                            <td>
+                                <a href="https://www.rdkit.org/" target="_blank">
+                                    <img class="img-thumbnail" src="{% static 'common/footer/imgs/rdkit-logo.png' %}"
+                                         alt="">
+                                </a>
+                            </td>
+                            <td>
+                                <a href="https://www.djangoproject.com/" target="_blank">
+                                    <img class="img-thumbnail" src="{% static 'common/footer/imgs/django-logo.png' %}"
+                                         alt="">
+                                </a>
+                            </td>
+                            <td>
+                                <a href="https://www.mysql.com/" target="_blank">
+                                    <img class="img-thumbnail" src="{% static 'common/footer/imgs/mysql-logo.png' %}"
+                                         alt="">
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="copyright">
+            &copy; Copyright <a href="http://www.scbdd.com/" target="_blank">Xiangya
+            School of Pharmaceutical Sciences,
+            Central South University</a>.
+            All Rights Reserved
+        </div>
+        {#        <div class="credits">#}
+        {#            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>#}
+        {#        </div>#}
+    </div>
+</footer><!-- End Footer -->

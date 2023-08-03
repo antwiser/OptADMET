@@ -1,0 +1,47 @@
+{% load static %}
+<!-- ======= Header ======= -->
+<header id="header" class="fixed-top d-flex align-items-center">
+    <div class="layui-col-md-offset1 layui-col-md10 d-flex align-items-center justify-content-between">
+        <h1 class="logo">
+            <img src="{% static 'favicon.ico' %}" width="40" height="40"
+                 class="d-inline-block justify-content-center align-items-center mr-2" alt="">
+            <a href="{% url 'home:index' %}">OptADMET</a>
+        </h1>
+        <nav id="navbar" class="navbar">
+            <ul>
+                {% with path=request.path %}
+                    <li><a class="nav-link scrollto {% if path == '/' %}active{% endif %}"
+                           href="{% url 'home:index' %}"><i class="fas fa-home nav-icon"></i> Home</a></li>
+                    <li><a class="nav-link scrollto {% if path == '/checker/' %}active{% endif %}"
+                            href="{% url 'home:checker' %}"><i class="fas fa-fingerprint nav-icon"></i> Optimization</a>
+                    </li>
+                    <li class="dropdown"><a href="#"
+                                            class="{% if path == '/optadmet/property/' %}active{% endif %}"><span><i
+                            class="fas fa-database nav-icon"></i> Database</span>
+                        <i class="bi bi-chevron-down"></i></a>
+                        <ul>
+                            <li class=""><a href="{% url 'database:property' %}"><span>Single Property</span></a>
+                            </li>
+                            <li class="dropdown"><a
+                                    href="{% url 'database:structure' %}"><span>Double Properties</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% comment %} <li><a class="nav-link scrollto {% if path == '/download/' %}active{% endif %}"
+                           href="{% url 'home:download' %}"><i class="fas fa-cloud-download-alt nav-icon"></i> Download</a>
+                    </li> {% endcomment %}
+                    {% comment %} <li><a class="nav-link scrollto {% if path == '/pub/' %}active{% endif %}"
+                        href="{% url 'home:pub' %}"><i class="fas fa-file-alt nav-icon"></i> Pubulication</a>
+                    </li> {% endcomment %}
+                    <li><a class="nav-link scrollto {% if path == '/tutorial/' %}active{% endif %}"
+                           href="{% url 'home:tutorials' %}"><i class="fas fa-file-alt nav-icon"></i> Tutorials</a>
+                    </li>
+                    <li><a class="nav-link scrollto {% if path == '/contact/' %}active{% endif %}"
+                           href="{% url 'home:contact' %}"><i class="fas fa-id-card nav-icon"></i> Contact</a>
+                    </li>
+                {% endwith %}
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav><!-- .navbar -->
+    </div>
+</header><!-- End Header -->

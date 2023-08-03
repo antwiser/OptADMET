@@ -1,0 +1,84 @@
+body {
+    font-size: 1rem;
+}
+
+.page-title {
+    margin: 1.5rem 0 1.5rem;
+    font-size: 2rem;
+    color: #496BA0;
+    font-family: "Poppins", sans-serif;
+}
+
+.page-title-2 {
+    color: #1a69a4;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.6rem;
+}
+
+.page-title-3 {
+    color: #4f5050;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.4rem;
+}
+
+.page-title-4 {
+    font-size: 1.3rem;
+    font-style: italic;
+}
+
+.page-content-p {
+    font-size: 1.2rem;
+    color: #333;
+    line-height: 2rem;
+    text-indent: 2em;
+    text-align: justify;
+}
+
+.img-title {
+    text-align: center;
+    font-size: 1rem;
+    color: #4c4f52;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.table-title {
+    text-align: center;
+    font-size: 1rem;
+    color: #4c4f52;
+}
+
+.explanation-content-p {
+    line-height: 2rem;
+    font-size: 1.2rem;
+    text-align: justify;
+}
+
+.ui.dividing.right.rail {
+    font-size: 1.2rem;
+}
+
+h4.ui.header {
+    font-size: 1.4rem;
+    color: #496BA0;
+}
+
+.ui.accordion .title:not(.ui) {
+    font-size: 1.2rem;
+}
+
+.ui.vertical.menu .menu .item {
+    font-size: 1rem;
+}
+
+.page-content-ul {
+    padding-left: 0;
+    text-align: justify;
+}
+
+.page-content-ul li {
+    line-height: 2rem;
+    font-family: "Calibri", sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}

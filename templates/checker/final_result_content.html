@@ -1,0 +1,223 @@
+{% load static %}
+{% load  %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<link rel="stylesheet" href="{% static 'checker/css/result_style.css' %}">
+<link rel="stylesheet" href="{% static 'common/datatable.css' %}">
+<link rel="stylesheet" href="{% static 'checker/css/load.css' %}">
+<style>
+    .dataTables_wrapper .dataTables_processing {
+        font-size: 5rem;
+        color: red;
+        z-index: 9999;
+    }
+</style>
+<main id="main">
+    <div class="layui-col-md10 layui-col-lg10 layui-col-md-offset1 p-4 mb-4">
+        <div class="ui divided selection list" style="font-size: 1.2rem;">
+            <a class="item ps-0">
+                <div class="ui big teal horizontal label">Original molecule</div>
+                <button class="ui blue basic button float-end" onclick="download()"><i
+                        class="icon blue download"></i>
+                    Download
+                </button>
+            </a>
+            <div class="ui divider mt-0"></div>
+        </div>
+
+        <table id="origin-table" class="ui orange celled table">
+            <thead>
+            <tr role="row">
+                <th class="text-left">Original molecule</th>
+                <th class="text-left">SMILES</th>
+                {% for item in properties %}
+                    <th class="text-left">{{ item }}</th>
+                {% endfor %}
+                {% comment %} <th class="text-left">Original value</th> {% endcomment %}
+                {% comment %} <th class="text-left">Detail</th> {% endcomment %}
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ structure|safe }}</td>
+                <td>
+                    <a class="ui blue label" onclick="copytext('{{ smiles }}')">copy</a>
+                </td>
+                {% for key, value in ori_data.items %}
+                    <td>
+                        <div class="ui horizontal label">{{ value|floatformat:3 }}</div>
+                    </td>
+                {% endfor %}
+                {% comment %} <td><a class="ui teal label" href="/deploy/optadmet/result/{{ filename }}/0">Detail</a></td> {% endcomment %}
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="ui divided selection list" style="font-size: 1.2rem">
+            <a class="item ps-0">
+                <div class="ui big blue horizontal label">Generated molecules</div>
+            </a>
+            <div class="ui divider mt-0"></div>
+        </div>
+        <div class="table-responsive">
+            <table id="basic-table" class="ui blue celled table ">
+                <thead>
+                <tr role="row">
+                    <th class="text-left">Generated molecule</th>
+                    <th class="text-left">SMILES</th>
+                    <th class="text-left">Rule ID</th>
+                    <th class="text-left">Transformation</th>
+                    {% for item in properties %}
+                        <th class="text-left">{{ item }}</th>
+                    {% endfor %}
+                    <th class="text-left">SA Score <i class="fas fa-info-circle" data-tippy-content="Synthetic accessibility score is designed to estimate ease of synthesis of drug-like molecules.<br>SAscore ≥ 6, difficult to synthesize; SAscore <6, easy to synthesize"></i></th>
+                    <th class="text-left">Detail</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<script src="{% static 'common/popperjs/core/dist/umd/popper.min.js' %}"></script>
+<script src="{% static 'common/tippyjs/dist/tippy-bundle.umd.min.js' %}"></script>
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>
+<script>
+    var ori_data = {{ ori_data|safe }};
+    function copytext(feature) {
+        var oInput = document.createElement('input');
+        oInput.value = feature;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.className = 'oInput';
+        oInput.style.display = 'none';
+        alert("copy success!");
+    }
+
+    function download() {
+        window.open("{{ download_path }}");
+    }
+
+    tippy('[data-tippy-content]', {
+        maxWidth: 'none',
+        role: 'tooltip',
+        allowHTML: true,
+    });
+
+    function set_datatable_data() {
+        let request_url = '/deploy/optadmet/final-result-datasource/';
+        let columns = [{
+            "data": "structure", 'render': function (data, type, full, meta) {
+                return full.structure;
+            }
+        }, {
+            "data": "smiles", 'render': function (data, type, full, meta) {
+                let smiles = "'" + full.smiles + "'";
+                return '<a class="ui blue label" onclick="copytext('+smiles+')">copy</a>';
+            }
+        }, {
+            "data": "structure_id", 'render': function (data, type, full, meta) {
+                let dataset = "{{ dataset }}";
+                if (dataset === '1') {
+                    return '<a href="/deploy/optadmet/optadmet/sdetail/' + full.structure_id + '/">' + full.structure_id + '</a>';
+                } else {
+                    return '<a href="/deploy/optadmet/optadmet/psdetail/' + full.structure_id + '/">' + full.structure_id + '</a>';
+                }
+            }
+        }, {
+            "data": "transformation", 'render': function (data, type, full, meta) {
+                let dataset = "{{ dataset }}";
+                if (dataset === '1') {
+                    return full.svg;
+                } else {
+                    return full.svg;
+                }
+            }
+        }];
+        {% for item in properties %}
+            columns.push({
+                "data": "", 'render': function (data, type, full, meta) {
+                    html_text = '';
+                    index = "{{ forloop.counter0 }}";
+                    html_text += '<div class="ui horizontal label">' + full[full.property[index]].toFixed(3) + '</div>';
+                    console.log(full);
+                    if (full[full.property[index]] < Object.values(ori_data)[index]) {
+                        html_text += ' <a class="ui violet label">⬇</a>';
+                    }else {
+                        html_text += ' <a class="ui orange label">⬆</a>';
+                    }
+                    return html_text;
+                }
+            });
+        {% endfor %}
+        columns.push({
+            "data": "sascore", 'render': function (data, type, full, meta) {
+                html_text = '';
+                html_text += '<div class="ui horizontal label">' + full.sascore.toFixed(2) + '</div>';
+                return html_text;
+            }
+        },{
+            "data": "detail", width: '10%', 'render': function (data, type, full, meta) {
+                let filename = "{{ filename }}";
+                let dataset = "{{ dataset }}";
+                if (dataset === '1') {
+                    return '<a class="ui teal label" href="/deploy/optadmet/result/' + filename + '/' + full.mol_index + '/1">Detail</a>'
+                } else {
+                    return '<a class="ui teal label" href="/deploy/optadmet/result/' + filename + '/' + full.mol_index + '/2">Detail</a>'
+                }
+                
+            }
+        });
+        let target = {{ properties|length }};
+        var list = [];
+        for (var i = 0; i < 4; i++) {
+            list.push(i);
+        }
+        list.push(target + 4);
+        list.push(target + 5);
+        var table = $('#basic-table').DataTable({
+            "displayLength": 5,
+            "aLengthMenu": [5, 10, 20],
+            "bAutoWidth": false,
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+                "data": {
+                    'filename': '{{ filename }}',
+                    'property': '{{ property }}'
+                }
+            },
+            data: '',
+            "columns": columns,
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "searchPlaceholder": "Search by ID",
+            },
+            "order": [],
+            "columnDefs": [{orderable:false, target: list}],
+            "searching": false,
+        });
+    }
+
+    $(document).ready(function () {
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}',}
+        });
+        set_datatable_data();
+    });
+</script>

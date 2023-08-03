@@ -1,0 +1,154 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<link rel="stylesheet" href="{% static 'home/css/download.css' %}">
+<main class="">
+    <div class="layui-col-md-offset2 layui-col-md8 mb-4">
+        <div class="d-flex justify-content-between align-items-center layui-row" id="data-header">
+            <div class="layui-col-md2">
+                <div class="title">DATA SOURCES</div>
+            </div>
+            <ul class="nav nav-pills d-flex justify-content-between align-items-center layui-col-md10" id="pills-tab"
+                role="tablist">
+                <li class="nav-item my-2" role="presentation">
+                    <button class="nav-link active ui inverted button" id="exp-global-tab" data-bs-toggle="pill"
+                            href="#exp-global" role="tab"
+                            aria-controls="pills-home" aria-selected="true">Experimental Dataset (Global)
+                    </button>
+                </li>
+                <li class="nav-item my-2" role="presentation">
+                    <button class="nav-link ui inverted button" id="pre-global-tab" data-bs-toggle="pill"
+                            href="#pre-global" role="tab"
+                            aria-controls="pills-profile" aria-selected="false">Expanded Dataset (Global)
+                    </button>
+                </li>
+                <li class="nav-item my-2" role="presentation">
+                    <button class="nav-link ui inverted button" id="exp-local-tab" data-bs-toggle="pill"
+                            href="#exp-local" role="tab"
+                            aria-controls="pills-contact" aria-selected="false">Experimental Dataset (Local)
+                    </button>
+                </li>
+                <li class="nav-item my-2" role="presentation">
+                    <button class="nav-link ui inverted button" id="pre-local-tab" data-bs-toggle="pill"
+                            href="#pre-local" role="tab"
+                            aria-controls="pills-contact" aria-selected="false">Expanded Dataset (Local)
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="exp-global" role="tabpanel" aria-labelledby="exp-global-tab">
+                <div class="download-content">
+                    <table class="ui celled unstackable striped table" style="border-radius: 0">
+                        <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Release On</th>
+                            <th>Size</th>
+                            <th>Download</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for idx, row in exp_global_info.iterrows %}
+                            <tr>
+                                <td>{{ row.property }}</td>
+                                <td>2021-05-20</td>
+                                <td>{{ row.size }}</td>
+                                <td>
+                                    <a href="/deploy/optadmet/static/media/{{ row.file_path }}"
+                                       download="">{{ row.name }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="pre-global" role="tabpanel" aria-labelledby="pre-global-tab">
+                <div class="download-content">
+                    <table class="ui celled unstackable striped table" style="border-radius: 0">
+                        <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Release On</th>
+                            <th>Size</th>
+                            <th>Download</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for idx, row in pre_global_info.iterrows %}
+                            <tr>
+                                <td>{{ row.property }}</td>
+                                <td>2021-05-20</td>
+                                <td>{{ row.size }}</td>
+                                <td>
+                                    <a href="/deploy/optadmet/static/media/{{ row.file_path }}"
+                                       download="">{{ row.name }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="exp-local" role="tabpanel" aria-labelledby="exp-local-tab">
+                <div class="download-content">
+                    <table class="ui celled unstackable striped table" style="border-radius: 0">
+                        <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Release On</th>
+                            <th>Size</th>
+                            <th>Download</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for idx, row in exp_local_info.iterrows %}
+                            <tr>
+                                <td>{{ row.property }}</td>
+                                <td>2021-05-20</td>
+                                <td>{{ row.size }}</td>
+                                <td>
+                                    <a href="/deploy/optadmet/static/media/{{ row.file_path }}"
+                                       download="">{{ row.name }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="pre-local" role="tabpanel" aria-labelledby="pre-local-tab">
+                <div class="download-content">
+                    <table class="ui celled unstackable striped table" style="border-radius: 0">
+                        <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Release On</th>
+                            <th>Size</th>
+                            <th>Download</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for idx, row in pre_local_info.iterrows %}
+                            <tr>
+                                <td>{{ row.property }}</td>
+                                <td>2021-05-20</td>
+                                <td>{{ row.size }}</td>
+                                <td>
+                                    <a href="/deploy/optadmet/static/media/{{ row.file_path }}"
+                                       download="">{{ row.name }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>
+<script>
+    $('.tabular.menu .item').tab();
+</script>

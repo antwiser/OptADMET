@@ -1,0 +1,165 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <script src="{% static 'common/echarts-5.1.2/echarts.min.js' %}"></script>
+    <script src="{% static 'home/js/renderBar.js' %}"></script>
+    <main id="main">
+        <!-- ======= Hero Section ======= -->
+        <section id="hero" class="d-flex align-items-center">
+            <div class="container">
+                <div class="layui-row">
+                    <div class="layui-col-md7 layui-col-lg6 pt-4 pt-lg-0 order-2 order-lg-1 d-flex flex-column justify-content-between"
+                         data-aos="fade-right">
+                        <div style="padding-top: 4rem;">
+                            <h1>Chemical transformation webserver for ADMET Optimization</h1>
+                            <h2 style="line-height:2rem" class="mt-5">OptADMET is a high-quality and comprehensive
+                                public chemical transformation webserver for rationalizing lead optimization. By
+                                comprehensively applying OptADMET webserver, chemists would achieve desirable ADMET
+                                optimization.</h2>
+                        </div>
+                        <div style="padding-bottom: 3rem;"><a href="#about" class="btn-get-started scrollto">Read
+                            More</a>
+                        </div>
+                    </div>
+                    <div class="layui-col-md5 layui-col-lg6 order-1 order-lg-2 hero-img" data-aos="fade-left"
+                         data-aos-delay="200">
+                        <img src="{% static 'home/img/index.png' %}" class="img-fluid" alt="">
+                    </div>
+                </div>
+            </div>
+        </section><!-- End Hero -->
+        <section id="about" class="about">
+            <div class="container" data-aos="fade-up">
+                <div class="section-title">
+                    <h2>Introducing OptADMET</h2>
+                    <p>Chemical transformation webserver for ADMET Optimization</p>
+                </div>
+                <div class="row content">
+                    <div class="col-lg-6 pt-4 pt-lg-0">
+                        <p style="text-align: justify;line-height: 2rem;">
+                            One of the great challenges in drug discovery is rationalizing lead optimization. In this
+                            phase, compounds that have been identified as the potential drug candidates need to be
+                            modified carefully with appropriate ADMET properties. The key questions faced by medicinal
+                            chemists are which compound(s) should be made next and how to balance multiple properties.
+                            To avoid the poor or ill-advised decisions, it is crucial to draw credible transformation
+                            rules from multiple experimental assays and apply them for efficient optimization.
+                            Therefore, OptADMET, the first integrated chemical transformation rule platform covering <strong>32</strong>
+                            important ADMET properties, is able to provide multiple-property rules and apply invaluable
+                            experience for lead optimization.
+                        </p>
+                        <br>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="accordion-list">
+                            <ul>
+                                <li>
+                                    <a data-bs-toggle="collapse" class=""
+                                        data-bs-target="#accordion-list-1"><span>01</span> High-quality and large optimization guidance database <i class="bx bx-chevron-down icon-show"></i><i
+                                            class="bx bx-chevron-up icon-close"></i></a>
+                                    <div id="accordion-list-1" class="collapse show" data-bs-parent=".accordion-list">
+                                        <p>
+                                            Based on 177,191 experimental data, 41,779 credible transformation rules are
+                                            provided for rendering desirable molecules. Besides, 239,194 accurate
+                                            predicted molecular data are integrated for expansion, which have converted
+                                            146,450 rules as the supplement.
+                                        </p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a data-bs-toggle="collapse" data-bs-target="#accordion-list-2"
+                                       class="collapsed"><span>02</span> Multi-property chemical rules with detailed information <i
+                                                class="bx bx-chevron-down icon-show"></i><i
+                                                class="bx bx-chevron-up icon-close"></i></a>
+                                    <div id="accordion-list-2" class="collapse" data-bs-parent=".accordion-list">
+                                        <p>
+                                            All chemical transformation rules provide transformation environment,
+                                            variety and credibility information, and more than 7,000 transformation
+                                            rules own two and more property change. Such informative rules can benefit
+                                            different research need.
+                                        </p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a data-bs-toggle="collapse" data-bs-target="#accordion-list-4"
+                                       class="collapsed"><span>03</span> Effective multi-property optimization and comprehensive evaluation <i
+                                                class="bx bx-chevron-down icon-show"></i><i
+                                                class="bx bx-chevron-up icon-close"></i></a>
+                                    <div id="accordion-list-4" class="collapse" data-bs-parent=".accordion-list">
+                                        <p>
+                                            Based on the large and credible rule database, user can achieve the
+                                            efficient multi-parameter optimization for the queried molecule. Moreover,
+                                            the ADMET profile of all optimized molecules provided by OptADMET is able to
+                                            for comprehensively evaluate molecular potential.
+                                        </p>
+                                    </div>
+                                </li>
+                                {% comment %} <li>
+                                    <a data-bs-toggle="collapse" data-bs-target="#accordion-list-3"
+                                       class="collapsed"><span>04</span> Expanded structural space and chemical
+                                        transformation<i
+                                                class="bx bx-chevron-down icon-show"></i><i
+                                                class="bx bx-chevron-up icon-close"></i></a>
+                                    <div id="accordion-list-3" class="collapse" data-bs-parent=".accordion-list">
+                                        <p>
+                                            Based on the MMPA-by-QSAR method, expanded dataset is summarized as a
+                                            supplement to strengthen the credibility of existed transformations and
+                                            provides more potential chemical optimization choices.
+                                        </p>
+                                    </div>
+                                </li> {% endcomment %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- End About Section -->
+        <!-- ======= Counts Section ======= -->
+        <section id="counts" class="counts section-bg">
+            <div class="container">
+                <div class="row justify-content-end">
+                    <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+                        <div class="count-box">
+                            <span data-purecounter-start="170000" data-purecounter-end="177191"
+                                  data-purecounter-duration="1.2" data-purecounter-separator="true"
+                                  class="purecounter"></span>
+                            <p>Experimental Data</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+                        <div class="count-box">
+                            <span data-purecounter-start="40000" data-purecounter-end="41779"
+                                  data-purecounter-duration="1.6" data-purecounter-separator="true"
+                                  class="purecounter"></span>
+                            <p>Experimental Transformation Rules</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+                        <div class="count-box">
+                            <span data-purecounter-start="240000" data-purecounter-end="239194"
+                                  data-purecounter-duration="1.6" data-purecounter-separator="true"
+                                  data-purecounter-separatorsymbol=","
+                                  class="purecounter"></span>
+                            <p>predicted Molecular Data</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+                        <div class="count-box">
+                            <span data-purecounter-start="140000" data-purecounter-end="146450"
+                                  data-purecounter-duration="1.2" data-purecounter-separator="true"
+                                  class="purecounter"></span>
+                            <p>Rule Supplement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- End Counts Section -->
+        <div class="layui-col-md-offset2 layui-col-md8 mt-4 text-center">
+            <div class="" style="width: 70%; height: 1080px;margin:0 auto;">
+                <div id="propertyStacked" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </main><!-- End #main -->
+    <script>
+        renderBar('/deploy/optadmet/static/media/data/statistic.json', 'propertyStacked', 'The number of global transformation rules of different ADMET property in OptADMET database')
+    </script>
+{% endblock %}

@@ -1,0 +1,2077 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link href="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.4.1/semantic.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'checker/css/result_style.css' %}">
+<link rel="stylesheet" href="{% static 'common/datatable.css' %}">
+<link rel="stylesheet" href="{% static 'checker/css/load.css' %}">
+<script src="{% static 'common/echarts-5.3.1/echarts.min.js' %}"></script>
+<style>
+    .dataTables_wrapper .dataTables_processing {
+        font-size: 5rem;
+        color: red;
+        z-index: 9999;
+    }
+
+    xm-select>.xm-body .xm-search-input {
+        border: none;
+        border-bottom: 1px solid #E6E6E6;
+        padding-left: 27px;
+        cursor: text;
+    }
+    
+    xm-select .xm-input {
+        height: 36px;
+    }
+    
+    xm-select .xm-input {
+        cursor: pointer;
+        border-radius: 2px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #E6E6E6;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        background-color: #FFF;
+        line-height: 1.3;
+        padding-left: 10px;
+        outline: 0;
+        user-select: text;
+        -ms-user-select: text;
+        -moz-user-select: text;
+        -webkit-user-select: text;
+    }
+</style>
+
+<main id="main">
+    <div class="layui-col-md10 layui-col-lg10 layui-col-md-offset1 p-4 mb-4">
+        <div class="ui divided selection list" style="font-size: 1.2rem;">
+            <a class="item ps-0">
+                <div class="ui big teal horizontal label">Summary</div>
+                <div class="float-end">
+                    {% comment %} <a href="javascript:void(0);" style="text-decoration: none;" class="" id="download_pdf">
+                        <button type="button" class="btn btn-danger btn-sm"><i class='fas fa-download'></i>
+                            Download as PDF
+                        </button>
+                    </a> {% endcomment %}
+                    <button class="ui orange basic button" onclick="download_pdf()"><i
+                        class="icon orange download"></i>
+                        Download as PDF
+                    </button>
+                    <button class="ui blue basic button" onclick="download()"><i
+                        class="icon blue download"></i>
+                        Download as CSV
+                    </button>
+                    <button class="ui purple button" data-bs-toggle="modal" data-bs-target="#filter-modal"
+                            id="final_screening_btn">
+                        <i class="filter icon" style="color: white;opacity: 1"></i>
+                        Final Screening
+                    </button>
+                </div>      
+            </a>
+            <div class="ui divider mt-0"></div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-md3 text-left">
+                <h5 style="word-wrap: break-word;">{{ smiles }}</h5>
+                <div class="ui medium bordered image">
+                    <a class="ui green ribbon label">Original molecule</a>
+                    {{ structure|safe }}
+                </div>
+            </div>
+            <div class="layui-col-md9">
+                <div id="chart-box">
+                    <div id="bar-graph" style="width: 100%;height: 360px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-md12 layui-col-sm12 layui-col-lg3 pe-2">
+                <table class="table table-sm table-borderless table-striped mb-4">
+                    <tbody class="text-center">
+                        <tr class="">
+                            <td class=""><i class="fas fa-circle text-success"></i> Accepted</td>
+                            <td class=""><i class="fas fa-circle text-warning"></i> Warning</td>
+                            <td class=""><i class="fas fa-circle text-danger"></i> Danger</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="ui column">
+                    <div class="ui raised segment">
+                        <a class="ui teal ribbon label">Physicochemical Property</a>
+                        <table class="table table-sm table-borderless table-striped mb-0">
+                            <tbody class="text-center">
+                            <tr>
+                                <td class="text-left" width="30%">LogS</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.logs.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% if info.logs.1 == 0 %}
+                                        -
+                                    {% else %}
+                                        {{ info.logs.1 }}
+                                    {% endif %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.logs.2 }}</td>
+                                <td width="10%">
+                                    <i class="fas fa-info-circle"
+                                        data-tippy-content="Log of the aqueous solubility. Optimal: -4~0.5 log mol/L"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">LogP</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.logp.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% if info.logp.1 == 0 %}
+                                        -
+                                    {% else %}
+                                        {{ info.logp.1 }}
+                                    {% endif %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.logp.2 }}</td>
+                                <td>
+                                    <i class="fas fa-info-circle"
+                                        data-tippy-content="Log of the octanol/water partition coefficient. Optimal: 0~3"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">LogD</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.logd.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.logd.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.logd.2 }}</td>
+                                <td>
+                                    <i class="fas fa-info-circle"
+                                        data-tippy-content="logP at physiological pH 7.4. Optimal: 1~3"></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p></p>
+                        <a class="ui blue ribbon label">Absorption</a>
+                        <table class="table table-sm table-borderless table-striped mb-0">
+                            <tbody class="text-center">
+                            <tr>
+                                <td class="text-left" width="30%">Caco-2 Permeability</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.Caco2.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.Caco2.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.Caco2.2 }}</td>
+                                <td width='10%'><i class="fas fa-info-circle"
+                                        data-tippy-content="Optimal: higher than -5.15 Log unit"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="text-left" width="30%">MDCK Permeability</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.MDCK.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {{ info.MDCK.1 }}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.MDCK.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                                    data-tippy-content="low permeability: < 2 × 10−6 cm/s<br>medium permeability: 2–20 × 10−6 cm/s<br>high passive permeability: > 20 × 10−6 cm/s"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Pgp-inhibitor</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.pgpinh.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.pgpinh.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.pgpinh.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being Pgp-inhibitor"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Pgp-substrate</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.pgpsub.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.pgpsub.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.pgpsub.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: substrate; Category 0: Non-substrate;<br>The output value is the probability of being Pgp-substrate"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">HIA</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.HIA.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.HIA.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.HIA.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Human Intestinal Absorption<br>Category 1: HIA+( HIA < 30%); Category 0: HIA-( HIA >= 30%); The output value is the probability of being HIA+"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">F<sub>20%</sub></td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.f20.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.f20.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.f20.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="20% Bioavailability<br>Category 1: F<sub>20%</sub>+ (bioavailability < 20%); Category 0: F<sub>20%</sub>- (bioavailability ≥ 20%); The output value is the probability of being F<sub>20%</sub>+"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">F<sub>30%</sub></td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.f30.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.f30.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.f30.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="30% Bioavailability<br>Category 1: F<sub>30%</sub>+ (bioavailability < 30%); Category 0: F<sub>30%</sub>- (bioavailability ≥ 30%); The output value is the probability of being F<sub>30%</sub>+"></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p></p>
+                        <a class="ui brown ribbon label">Distribution</a>
+                        <table class="table table-sm table-borderless table-striped mb-0">
+                            <tbody class="text-center">
+                            <tr>
+                                <td class="text-left" width="30%">PPB</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.PPB.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.PPB.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.PPB.2 }}</td>
+                                <td width="10%"><i class="fas fa-info-circle"
+                                                    data-tippy-content="Plasma Protein Binding<br>Optimal: < 90%. Drugs with high protein-bound may have a low therapeutic index."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">VD</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.vdss.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {{ info.vdss.1 }}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.vdss.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Volume Distribution<br>Optimal: 0.04-20L/kg"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">BBB Penetration</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.BBB.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.BBB.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.BBB.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Blood-Brain Barrier Penetration<br>Category 1: BBB+; Category 0: BBB-; The output value is the probability of being BBB+"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Fu</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.Fu.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {{ info.Fu.1 }}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.Fu.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="The fraction unbound in plasms<br>Low: <5%; Middle: 5~20%; High: > 20%"></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p></p>
+                        <a class="ui orange ribbon label">Metabolism</a>
+                        <table class="table table-sm table-borderless table-striped mb-0">
+                            <tbody class="text-center">
+                            <tr>
+                                <td class="text-left" width="30%">CYP1A2 inhibitor</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.cyp1a2inh.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.cyp1a2inh.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.cyp1a2inh.2 }}</td>
+                                <td width="10%"><i class="fas fa-info-circle"
+                                                    data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP1A2 substrate</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp1a2sub.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp1a2sub.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp1a2sub.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP2C19 inhibitor</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp2c19inh.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp2c19inh.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp2c19inh.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP2C19 substrate</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp2c19sub.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp2c19sub.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp2c19sub.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP2C9 inhibitor</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp2c9inh.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp2c9inh.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp2c9inh.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP2C9 substrate</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp2c9sub.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp2c9sub.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp2c9sub.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP2D6 inhibitor</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp2d6inh.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp2d6inh.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp2d6inh.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP2D6 substrate</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp2d6sub.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp2d6sub.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp2d6sub.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP3A4 inhibitor</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp3a4inh.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp3a4inh.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp3a4inh.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">CYP3A4 substrate</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.cyp3a4sub.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.cyp3a4sub.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.cyp3a4sub.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p></p>
+                        <a class="ui purple ribbon label">Excretion</a>
+                        <table class="table table-sm table-borderless table-striped mb-0">
+                            <tbody class="text-center">
+                            <tr>
+                                <td class="text-left" width="30%">CL</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.CL.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.CL.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.CL.2 }}</td>
+                                <td width="10%"><i class="fas fa-info-circle"
+                                                    data-tippy-content="Clearance<br>High: >15 mL/min/kg; moderate: 5-15 mL/min/kg; low: <5 mL/min/kg"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">T<sub>1/2</sub></td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.t12.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.t12.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.t12.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: long half-life ; Category 0: short half-life;<br>long half-life: >3h; short half-life: <3h<br>The output value is the probability of having long half-life."></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p></p>
+                        <a class="ui red ribbon label">Toxicity</a>
+                        <table class="table table-sm table-borderless table-striped mb-0">
+                            <tbody class="text-center">
+                            <tr>
+                                <td class="text-left" width="30%">hERG Blockers</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.herg.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.herg.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.herg.2 }}</td>
+                                <td width="10%"><i class="fas fa-info-circle"
+                                                    data-tippy-content="Category 1: active; Category 0: inactive;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">H-HT</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.hht2.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.hht2.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.hht2.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Human Hepatotoxicity<br>Category 1: H-HT positive(+); Category 0: H-HT negative(-);<br>The output value is the probability of being toxic."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">DILI</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.Dili.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.Dili.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.Dili.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Drug Induced Liver Injury.<br>Category 1: drugs with a high risk of DILI; Category 0: drugs with no risk of DILI. The output value is the probability of being toxic."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">AMES Toxicity</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.AMES.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.AMES.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.AMES.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Ames positive(+); Category 0: Ames negative(-);<br>The output value is the probability of being toxic."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Rat Oral Acute Toxicity</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.ROA.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.ROA.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.ROA.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 0: low-toxicity; Category 1: high-toxicity;<br>The output value is the probability of being highly toxic."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">FDAMDD</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.fdamdd.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.fdamdd.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.fdamdd.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Maximum Recommended Daily Dose<br>Category 1: FDAMDD (+); Category 0: FDAMDD (-)<br>The output value is the probability of being positive."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Skin Sensitization</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.SkinSen.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.SkinSen.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.SkinSen.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: Sensitizer; Category 0: Non-sensitizer;<br>The output value is the probability of being sensitizer."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Carcinogencity</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.Carcinogenicity.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.Carcinogenicity.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.Carcinogenicity.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: carcinogens; Category 0: non-carcinogens;<br>The output value is the probability of being toxic."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Eye Corrosion</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.ec.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.ec.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.ec.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: corrosives ; Category 0: noncorrosives<br>The output value is the probability of being corrosives."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Eye Irritation</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.ei.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.ei.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.ei.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: irritants ; Category 0: nonirritants<br>The output value is the probability of being irritants."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">Respiratory Toxicity</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.Respiratory.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.Respiratory.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.Respiratory.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: respiratory toxicants; Category 0: respiratory nontoxicants<br>The output value is the probability of being toxic."></i>
+                                </td>
+                            </tr>
+
+                            {% comment %} <tr>
+                                <td colspan="4" style="font-weight: 700;text-align: left">
+                                    <a class="ui teal tag label">Environmental Toxicity</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left" width="30%">Bioconcentration Factors</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.BCF.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.BCF.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.BCF.2 }}</td>
+                                <td width="10%"><i class="fas fa-info-circle"
+                                                    data-tippy-content="Bioconcentration factors are used for considering secondary poisoning potential and assessing risks to human health via the food chain.<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">IGC<sub>50</sub></td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.igc50.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.igc50.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.igc50.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Tetrahymena pyriformis 50 percent growth inhibition concentration<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">LC<sub>50</sub>FM</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.lc50.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.lc50.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.lc50.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="96-hour fathead minnow 50 percent lethal concentration<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">LC<sub>50</sub>DM</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.lc50dm.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.lc50dm.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.lc50dm.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="48-hour daphnia magna 50 percent lethal concentration<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                                </td>
+                            </tr>
+                            <tr></tr> {% endcomment %}
+                            <tr>
+                                <td colspan="4" style="font-weight: 700;text-align: left">
+                                    <a class="ui teal tag label">Tox21 Pathway</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left" width='30%'>NR-AR</td>
+                                <td width="10%"><i class="fas fa-circle text-success"></i></td>
+                                <td width="10%">{{ info.nrar.0 }}</td>
+                                <td width="10%"><i class="fas fa-circle text-warning"></i></td>
+                                <td width="10%">
+                                    {% with tmp=info.nrar.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td width="10%"><i class="fas fa-circle text-danger"></i></td>
+                                <td width="10%">{{ info.nrar.2 }}</td>
+                                <td width="10%"><i class="fas fa-info-circle"
+                                                    data-tippy-content="Androgen receptor<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">NR-AR-LBD</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.nrarlbd.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.nrarlbd.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.nrarlbd.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Androgen receptor ligand-binding domain<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">NR-AhR</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.nrahr.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.nrahr.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.nrahr.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Aryl hydrocarbon receptor<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">NR-Aromatase</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.nraromatase.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.nraromatase.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.nraromatase.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">NR-ER</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.nrer.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.nrer.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.nrer.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Estrogen receptor<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">NR-ER-LBD</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.nrerlbd.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.nrerlbd.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.nrerlbd.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Estrogen receptor ligand-binding domain<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">NR-PPAR-gamma
+                                </td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.nrppargamma.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {{ info.nrppargamma.1 }}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.nrppargamma.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Peroxisome proliferator-activated receptor gamma<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">SR-ARE</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.srare.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {{ info.srare.1 }}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.srare.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Antioxidant response element<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">SR-ATAD5</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.sratad5.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.sratad5.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.sratad5.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="ATPase family AAA domain-containing protein 5<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">SR-HSE</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.srhse.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.srhse.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.srhse.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Heat shock factor response element<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">SR-MMP</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.srmmp.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.srmmp.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.srmmp.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Mitochondrial membrane potential<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">SR-p53</td>
+                                <td><i class="fas fa-circle text-success"></i></td>
+                                <td>{{ info.srp53.0 }}</td>
+                                <td><i class="fas fa-circle text-warning"></i></td>
+                                <td>
+                                    {% with tmp=info.srp53.1 %}
+                                        {% if tmp == 0 %}
+                                            -
+                                        {% else %}
+                                            {{ tmp }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td><i class="fas fa-circle text-danger"></i></td>
+                                <td>{{ info.srp53.2 }}</td>
+                                <td><i class="fas fa-info-circle"
+                                        data-tippy-content="Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md12 layui-col-sm12 layui-col-lg9 ps-2">
+                <div class="ui divided selection list" style="font-size: 1.2rem">
+                    <a class="item ps-0">
+                        <div class="ui big blue horizontal label">Generated molecules</div>
+                    </a>
+                    <div class="ui divider mt-0"></div>
+                </div>
+                <table id="basic-table" class="ui celled table table-responsive">
+                    <thead>
+                    <tr role="row">
+                        <th class="text-left">Generated molecule</th>
+                        <th class="text-left">SMILES</th>
+                        <th class="text-left">Original Transformation ID</th>
+                        <th class="text-left">Transformation</th>
+                        {% for item in property_name %}
+                        <th class="text-left">{{ item }}</th>
+                        {% endfor %}
+                        <th class="text-left">SA Score <i class="fas fa-info-circle" data-tippy-content="Synthetic accessibility score is designed to estimate ease of synthesis of drug-like molecules.<br>SAscore ≥ 6, difficult to synthesize; SAscore <6, easy to synthesize"></i></th>
+                        <th class="text-left">PDF</th>
+                        <th class="text-left">Detail</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<div class="modal fade" id="filter-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Select the properties to be filtered</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-5">
+            <form class="ui form" action="{% url 'home:final_screening' %}" method="post" id="filter-form">
+                {% csrf_token %}
+                <input type="text" value="{{ filename }}" name="file_path" hidden>
+                <input type="text" value="{{ property }}" name="property" hidden>
+                <div class="field">
+                    <label>Properties: </label>
+                    <div id="multi-filter" class="xm-select-demo" name="multi_property"></div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer d-flex justify-content-end align-content-center">
+            <div>
+                <button class="ui grey button" data-bs-dismiss="modal">Close</button>
+                <button class="ui purple button" 
+                        lay-submit lay-filter="filter-submit" 
+                        style="color: white;opacity: 1" 
+                        id="final_screening_btn">Apply filter</button>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="ui basic modal" id="loading-btn">
+    <div class="content text-center">
+        <div class="content-box">
+            <div class="load">
+                <hr/>
+                <hr/>
+                <hr/>
+                <hr/>
+            </div>
+            <h2 style="color: white">Please Wait...</h2>
+        </div>
+    </div>
+</div>
+<script src="{% static 'common/popperjs/core/dist/umd/popper.min.js' %}"></script>
+<script src="{% static 'common/tippyjs/dist/tippy-bundle.umd.min.js' %}"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<script src="{% static 'common/layui-v2.6.8/xm-select.js' %}"></script>
+<script>
+    var select_property = xmSelect.render({
+        el: '#multi-filter', 
+        language: 'en',
+        theme: {
+            color: '#1cbbb4',
+        },
+        toolbar: {
+            show: true,
+            list: [ 'ALL', 'CLEAR', 'REVERSE' ]
+        },
+        autoRow: true,
+        data: [
+            {name: '【Basic】LogD7.4', value: 'logd'},
+            {name: '【Basic】LogP', value: 'logp'},
+            {name: '【Basic】LogS', value: 'logs'},
+            {name: '【Absorption】Caco-2', value: 'Caco-2'},
+            {name: '【Absorption】Pgp-inhibitor', value: 'pgp-inh'},
+            {name: '【Absorption】Pgp-substrate', value: 'pgp-sub'},
+            {name: '【Absorption】F (30%)', value: 'f30'},
+            {name: '【Distribution】PPB', value: 'PPB'},
+            {name: '【Distribution】BBB', value: 'BBB'},
+            {name: '【Distribution】vdss', value: 'vdss'},
+            {name: '【Metabolism】CYP 1A2-inhibitor', value: 'cyp1a2-inh'},
+            {name: '【Metabolism】CYP 2C19-inhibitor', value: 'cyp2c19-inh'},
+            {name: '【Metabolism】CYP 2C9-inhibitor', value: 'cyp2c9-inh'},
+            {name: '【Metabolism】CYP 2D6-inhibitor', value: 'cyp2d6-inh'},
+            {name: '【Metabolism】CYP 2d6-substrate', value: 'cyp2d6-sub'},
+            {name: '【Metabolism】CYP 3A4-inhibitor', value: 'cyp3a4-inh'},
+            {name: '【Excretion】T1/2', value: 't12'},
+            {name: '【Toxicity】Ames', value: 'AMES'},
+            {name: '【Toxicity】BCF', value: 'BCF'},
+            {name: '【Toxicity】DILI', value: 'Dili'},
+            {name: '【Toxicity】EC', value: 'ec'},
+            {name: '【Toxicity】EI', value: 'ei'},
+            {name: '【Toxicity】FDAMDD', value: 'fdamdd'},
+            {name: '【Toxicity】H-HT-2', value: 'h-ht2'},
+            {name: '【Toxicity】hERG', value: 'herg'},
+            {name: '【Toxicity】IGC50', value: 'igc50'},
+            {name: '【Toxicity】NR-AhR', value: 'nr-ahr'},
+            {name: '【Toxicity】NR-AR', value: 'nr-ar'},
+            {name: '【Toxicity】NR-AR-LBD', value: 'nr-ar-lbd'},
+            {name: '【Toxicity】Respiratory', value: 'respiratory'},
+            {name: '【Toxicity】SR-ARE', value: 'sr-are'},
+            {name: '【Toxicity】SR-MMP', value: 'sr-mmp'},
+        ]
+    });
+
+    {% comment %} function filter_reset(){
+        $('#filter-select').dropdown('clear');
+    } {% endcomment %}
+
+    {% comment %} $('.ui.dropdown').dropdown({clearable: true}); {% endcomment %}
+
+    {% comment %} $('#loading-btn').modal({
+        closable: false,
+    }).modal('attach events', '#final_screening_btn'); {% endcomment %}
+
+    layui.use('form', function () {
+        var form = layui.form;
+        //监听提交
+        form.on('submit(filter-submit)', function (data) {
+            data.field.filename = $("input[name='file_path']").val();
+            data.field.property = $("input[name='property']").val();
+            data.field.select_property = $('select[name="multi_property"]').val();
+            let selectArr = select_property.getValue('value');
+            {% comment %} console.log(selectArr); {% endcomment %}
+            $('#filter-form').submit();
+            return false;
+        });
+    });
+
+    function download() {
+        window.open("{{ download_path }}");
+    }
+
+    function download_pdf() {
+        $.ajax({
+            type: "POST",
+            url: "{% url 'home:s_download' %}",
+            data: {'filename': "{{ filename }}"},
+            beforeSend: function (xhr, setting) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}")
+            },
+            success: function (result) {
+                var blob = new Blob([result]);
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "{{ filename }}" + ".pdf";
+                link.click();
+            },
+            error: function (result) {
+            }
+        });
+    }
+
+    tippy('[data-tippy-content]', {
+        maxWidth: 'none',
+        role: 'tooltip',
+        allowHTML: true,
+    });
+    var myChart = echarts.init(document.getElementById('bar-graph'));
+    var colors = ['#5470C6', '#EE6666'];
+    var data_values = {{ data|safe }};
+    var legend_value = $.makeArray({{ legend|safe }});
+    var loop_index = 0;
+    var ori_idx = {{ ori_idx|safe }};
+    var ori_data = {{ ori_data|safe }};
+    var data_values_array = Object.values(data_values);
+    if (Object.keys(ori_idx).length == 2){
+        let series = [{
+            type: 'bar',
+            showBackground: true,
+            tooltip: {
+                valueFormatter: function (value) {
+                  return value + ' items';
+                }
+            },
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#bae7ff' },
+                  { offset: 0.5, color: '#69c0ff' },
+                  { offset: 1, color: '#1890ff' }
+                ])
+            },
+            emphasis: {
+                itemStyle: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#096dd9' },
+                    { offset: 0.7, color: '#096dd9' },
+                    { offset: 1, color: '#bae7ff' }
+                  ])
+                }
+            },
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            data: Object.values(data_values_array[0]),
+        },{
+            type: 'bar',
+            showBackground: true,
+            tooltip: {
+                valueFormatter: function (value) {
+                  return value + ' items';
+                }
+            },
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#d9f7be' },
+                  { offset: 0.5, color: '#95de64' },
+                  { offset: 1, color: '#52c41a' }
+                ])
+            },
+            emphasis: {
+                itemStyle: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#389e0d' },
+                    { offset: 0.7, color: '#389e0d' },
+                    { offset: 1, color: '#d9f7be' }
+                  ])
+                }
+            },
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            data: Object.values(data_values_array[1]),
+        },{
+            type: 'line',
+            tooltip: {
+                show: false,
+            },
+            smooth: true,
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            data: Object.values(data_values_array[0]),
+        },{
+            type: 'line',
+            tooltip: {
+                show: false,
+            },
+            smooth: true,
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            data: Object.values(data_values_array[1]),
+        },]
+        myChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                  type: 'cross',
+                  crossStyle: {
+                    color: '#999'
+                  }
+                }
+            },
+            grid: [
+                {left: '5%', width: '42%'},
+                {right: '5%', width: '42%'},
+            ],
+            xAxis: [
+                { 
+                    type: 'category',
+                    gridIndex: 0,
+                    data: Object.keys(data_values_array[0]),
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {
+                            type : 'cross'
+                        }
+                    },
+                },
+                { 
+                    type: 'category',
+                    gridIndex: 1,
+                    data: Object.keys(data_values_array[1]),
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {
+                            type : 'cross'
+                        }
+                    },
+                },
+            ],
+            yAxis: [
+                {
+                    name: Object.keys(data_values)[0],
+                    nameTextStyle: {
+                        fontWeight: 'bold',
+                        fontSize: 14,
+                    },
+                    gridIndex: 0
+                },
+                { 
+                    name: Object.keys(data_values)[1],
+                    nameTextStyle: {
+                        fontWeight: 'bold',
+                        fontSize: 14,
+                    },
+                    gridIndex: 1
+                },
+            ],
+            series: series,
+        });
+        series.push({
+            type: 'line',
+            markLine: {
+                lineStyle: {
+                    width: 2,
+                },
+                label: {
+                    show: true,
+                    position: 'middle',
+                    rotate: 0,
+                    offset: [-50, 80],
+                    formatter: function (data) {
+                        return 'original\n' + Object.keys(ori_idx)[0].toString() + ': ' + Object.values(ori_data)[0].toFixed(3).toString();
+                    },
+                    color: '#32383B',
+                    padding: [12, 12, 7, 12],
+                    lineHeight: 14,
+                    borderWidth: 2,
+                    borderColor: '#F7B500',
+                    borderRadius: 2,
+                    fontWeight: 550,
+                    fontFamily: 'Times New Roman',
+                    backgroundColor: '#fff',
+                },
+                symbol: 'none',
+                data: [[
+                    {coord: [Object.values(ori_idx)[0]-1, 0]},
+                    {coord: [Object.values(ori_idx)[0]-1, myChart.getModel().option.yAxis[0].axisPointer.value]}
+                ]],
+            },
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+        });
+        series.push({
+            type: 'line',
+            markLine: {
+                lineStyle: {
+                    width: 2,
+                },
+                label: {
+                    show: true,
+                    position: 'middle',
+                    rotate: 0,
+                    offset: [-50, 80],
+                    formatter: function (data) {
+                        return 'original\n' + Object.keys(ori_idx)[1].toString() + ': ' + Object.values(ori_data)[1].toFixed(3).toString();
+                    },
+                    color: '#32383B',
+                    padding: [12, 12, 7, 12],
+                    lineHeight: 14,
+                    borderWidth: 2,
+                    borderColor: '#F7B500',
+                    borderRadius: 2,
+                    fontWeight: 550,
+                    fontFamily: 'Times New Roman',
+                    backgroundColor: '#fff',
+                },
+                symbol: 'none',
+                data: [[
+                    {coord: [Object.values(ori_idx)[1]-1, 0]},
+                    {coord: [Object.values(ori_idx)[1]-1, myChart.getModel().option.yAxis[1].axisPointer.value]}
+                ]],
+            },
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+        })
+        myChart.setOption({
+            series: series,
+        })
+    } else {
+        let series = [{
+            type: 'bar',
+            showBackground: true,
+            tooltip: {
+                valueFormatter: function (value) {
+                  return value + ' items';
+                }
+            },
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#bae7ff' },
+                  { offset: 0.5, color: '#69c0ff' },
+                  { offset: 1, color: '#1890ff' }
+                ])
+            },
+            emphasis: {
+                itemStyle: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#096dd9' },
+                    { offset: 0.7, color: '#096dd9' },
+                    { offset: 1, color: '#bae7ff' }
+                  ])
+                }
+            },
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            data: Object.values(data_values_array[0]),
+        },{
+            type: 'line',
+            tooltip: {
+                show: false,
+            },
+            smooth: true,
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            data: Object.values(data_values_array[0]),
+        }]
+        myChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                  type: 'cross',
+                  crossStyle: {
+                    color: '#999'
+                  }
+                }
+            },
+            grid: [
+                {left: '5%', width: '90%'},
+            ],
+            xAxis: [
+                { 
+                    type: 'category',
+                    gridIndex: 0,
+                    data: Object.keys(data_values_array[0]),
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {
+                            type : 'cross'
+                        }
+                    },
+                },
+            ],
+            yAxis: [
+                {
+                    name: Object.keys(data_values)[0],
+                    nameTextStyle: {
+                        fontWeight: 'bold',
+                        fontSize: 14,
+                    },
+                    gridIndex: 0
+                }
+            ],
+            series: series,
+        });
+        series.push({
+            type: 'line',
+            markLine: {
+                lineStyle: {
+                    width: 2,
+                },
+                label: {
+                    show: true,
+                    position: 'middle',
+                    rotate: 0,
+                    offset: [-50, 80],
+                    formatter: function (data) {
+                        return 'original\n' + Object.keys(ori_idx)[0].toString() + ': ' + Object.values(ori_data)[0].toFixed(3).toString();
+                    },
+                    color: '#32383B',
+                    padding: [12, 12, 7, 12],
+                    lineHeight: 14,
+                    borderWidth: 2,
+                    borderColor: '#F7B500',
+                    borderRadius: 2,
+                    fontWeight: 550,
+                    fontFamily: 'Times New Roman',
+                    backgroundColor: '#fff',
+                },
+                symbol: 'none',
+                data: [[
+                    {coord: [Object.values(ori_idx)[0]-1, 0]},
+                    {coord: [Object.values(ori_idx)[0]-1, myChart.getModel().option.yAxis[0].axisPointer.value]}
+                ]],
+            },
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+        });
+        myChart.setOption({
+            series: series,
+        })
+    }
+    
+
+    {% comment %} $.each(data_values, function (index, object) {
+        tmp_data = [];
+        for (let key in object) {
+            tmp_data.push(key);
+        }
+        tmp_value = [];
+        for (let value in object) {
+            tmp_value.push(object[value])
+        }
+        xaxis.push({
+            type: 'category',
+            axisTick: {
+                alignWithLabel: true
+            },
+            axisLine: {
+                onZero: false,
+                lineStyle: {
+                    color: colors[loop_index]
+                }
+            },
+            axisPointer: {
+                label: {
+                    formatter: function (params) {
+                        return index + '  ' + params.value
+                            + (params.seriesData.length ? '：' + params.seriesData[0].data : '');
+                    }
+                }
+            },
+            data: tmp_data
+        });
+        if (loop_index === 1) {
+            series.push({
+                name: legend_value[loop_index],
+                type: 'line',
+                xAxisIndex: 1,
+                smooth: true,
+                emphasis: {
+                    focus: 'series'
+                },
+                data: tmp_value
+            });
+        } else {
+            series.push({
+                name: legend_value[loop_index],
+                type: 'line',
+                smooth: true,
+                emphasis: {
+                    focus: 'series'
+                },
+                data: tmp_value
+            });
+        }
+        loop_index += 1;
+    });
+    myChart.setOption({
+        color: colors,
+        tooltip: {
+            trigger: 'none',
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        legend: {
+            data: legend_value
+        },
+        grid: {
+            top: 70,
+            bottom: 50
+        },
+        yAxis: [{
+            type: 'value'
+        }],
+        xAxis: xaxis,
+        series: series,
+    });
+    y_max = myChart.getModel().getComponent('yAxis').axis.scale._extent;
+    x_axis = myChart.getModel().getComponent('xAxis').axis.model.option.data;
+    loop_index = 0;
+    $.each(ori_idx, function (index, object) {
+        series.push({
+            name: 'Original molecule property',
+            type: 'line',
+            markLine: {
+                lineStyle: {
+                    color: colors[loop_index],
+                    width: 2,
+                },
+                label: {
+                    show: true,
+                    position: 'middle',
+                    rotate: 0,
+                    offset: [-50, 80],
+                    formatter: function (data) {
+                        return 'original\n' + index.toString() + ': ' + ori_data[index].toFixed(3).toString();
+                    },
+                    color: '#32383B',
+                    padding: [12, 12, 7, 12],
+                    lineHeight: 14,
+                    borderWidth: 2,
+                    borderColor: '#F7B500',
+                    borderRadius: 2,
+                    fontWeight: 550,
+                    fontFamily: 'Times New Roman',
+                },
+                itemStyle: {
+                    tooltip: {
+                        formatter: function (params) {
+                            console.log(params)   //打印结果
+                            return params[0].name + '<br/>' + params[0].seriesName + ' : ' + params[0].data + '%'     //根据需要拼接
+                        },
+                        trigger: 'axis',
+                        axisPointer: {
+                            // 坐标轴指示器，坐标轴触发有效
+                            type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                },
+                name: index,
+                symbol: 'none',
+                data: [[
+                    {coord: [x_axis[object - 1], 0]},
+                    {coord: [x_axis[object - 1], y_max[1]]}
+                ]]
+            }
+        });
+        loop_index += 1;
+    });
+    myChart.setOption({
+        color: colors,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        legend: {
+            data: legend_value
+        },
+        grid: {
+            top: '12%',
+            bottom: '10%',
+            left: '3%',
+            right: '3%',
+        },
+        yAxis: [{
+            type: 'value'
+        }],
+        xAxis: xaxis,
+        series: series,
+    }); {% endcomment %}
+
+    $(window).on('resize', function () {
+        myChart.resize();
+    });
+
+    function copytext(feature) {
+        var oInput = document.createElement('input');
+        oInput.value = feature;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.className = 'oInput';
+        oInput.style.display = 'none';
+        alert("copy success!");
+    }
+
+    function set_datatable_data() {
+        let request_url = '/deploy/optadmet/result-datasource/';
+        {% if property_name|length == 1 %}
+            property = [
+                {
+                    "data": "structure", 'render': function (data, type, full, meta) {
+                        return full.structure;
+                    }
+                }, {
+                    "data": "smiles", 'render': function (data, type, full, meta) {
+                        let smiles = "'" + full.smiles + "'";
+                        return '<a class="ui blue label" onclick="copytext('+smiles+')">copy</a>';
+                    }
+                }, {
+                    "data": "structure_id", 'render': function (data, type, full, meta) {
+                        let dataset = "{{ dataset }}";
+                        if (dataset === '1') {
+                            return '<a href="/deploy/optadmet/optadmet/sdetail/' + full.structure_id + '/">' + full.structure_id + '</a>';
+                        } else {
+                            return '<a href="/deploy/optadmet/optadmet/psdetail/' + full.structure_id + '/">' + full.structure_id + '</a>';
+                        }
+                    }
+                }, {
+                    "data": "transformation", 'render': function (data, type, full, meta) {
+                        let dataset = "{{ dataset }}";
+                        if (dataset === '1') {
+                            return full.svg;
+                        } else {
+                            return full.svg;
+                        }
+                    }
+                }, {
+                    "data": "", 'render': function (data, type, full, meta) {
+                        html_text = '';
+                        html_text += '<div class="ui horizontal label">' + full[full.property[0]].toFixed(3) + '</div>';
+                        if (full[full.property[0]] < Object.values(ori_data)[0]) {
+                            html_text += ' <a class="ui violet label">⬇</a>';
+                        }else {
+                            html_text += ' <a class="ui orange label">⬆</a>';
+                        }
+                        return html_text;
+                    }
+                }, {
+                    "data": "sascore", 'render': function (data, type, full, meta) {
+                        html_text = '';
+                        html_text += '<div class="ui horizontal label">' + full.sascore.toFixed(2) + '</div>';
+                        return html_text;
+                    }
+                }, {
+                    "data": "detail", width: '10%', 'render': function (data, type, full, meta) {
+                        let filename = "{{ filename }}";
+                        return '<a class="ui red label" href="/deploy/optadmet/d_pdf/' + filename + '/' + full.mol_index + '">PDF</a>'
+                    }
+                }, {
+                    "data": "detail", width: '10%', 'render': function (data, type, full, meta) {
+                        let filename = "{{ filename }}";
+                        let dataset = "{{ dataset }}";
+                        if (dataset === '1') {
+                            return '<a class="ui teal label" href="/deploy/optadmet/result/' + filename + '/' + full.mol_index + '/1">Detail</a>'
+                        }else {
+                            return '<a class="ui teal label" href="/deploy/optadmet/result/' + filename + '/' + full.mol_index + '/2">Detail</a>'
+                        }
+                    }
+                },
+            ];
+        {% else %}
+            property = [
+                {
+                    "data": "structure", 'render': function (data, type, full, meta) {
+                        return full.structure;
+                    }
+                }, {
+                    "data": "smiles", 'render': function (data, type, full, meta) {
+                        let smiles = "'" + full.smiles + "'";
+                        return '<a class="ui blue label" onclick="copytext('+smiles+')">copy</a>';
+                    }
+                }, {
+                    "data": "structure_id", 'render': function (data, type, full, meta) {
+                        let dataset = "{{ dataset }}";
+                        if (dataset === '1') {
+                            return '<a href="/deploy/optadmet/optadmet/sdetail/' + full.structure_id + '/">' + full.structure_id + '</a>';
+                        } else {
+                            return '<a href="/deploy/optadmet/optadmet/psdetail/' + full.structure_id + '/">' + full.structure_id + '</a>';
+                        }
+                    }
+                }, {
+                    "data": "transformation", 'render': function (data, type, full, meta) {
+                        let dataset = "{{ dataset }}";
+                        if (dataset === '1') {
+                            return full.svg;
+                        } else {
+                            return full.svg;
+                        }
+                    }
+                }, {
+                    "data": "", 'render': function (data, type, full, meta) {
+                        html_text = '';
+                        html_text += '<div class="ui horizontal label">' + full[full.property[0]].toFixed(3) + '</div>';
+                        if (full[full.property[0]] < Object.values(ori_data)[0]) {
+                            html_text += ' <a class="ui violet label">⬇</a>';
+                        } else {
+                            html_text += ' <a class="ui orange label">⬆</a>';
+                        }
+                        return html_text;
+                    }
+                }, {
+                    "data": "", 'render': function (data, type, full, meta) {
+                        html_text = '';
+                        html_text += '<div class="ui horizontal label">' + full[full.property[1]].toFixed(3) + '</div>';
+                        if (full[full.property[1]] < Object.values(ori_data)[1]) {
+                            html_text += ' <a class="ui violet label">⬇</a>';
+                        } else {
+                            html_text += ' <a class="ui orange label">⬆</a>';
+                        }
+                        return html_text;
+                    }
+                }, {
+                    "data": "sascore", 'render': function (data, type, full, meta) {
+                        html_text = '';
+                        html_text += '<div class="ui horizontal label">' + full.sascore.toFixed(2) + '</div>';
+                        return html_text;
+                    }
+                }, {
+                    "data": "detail", width: '10%', 'render': function (data, type, full, meta) {
+                        let filename = "{{ filename }}";
+                        return '<a class="ui red label" href="/deploy/optadmet/d_pdf/' + filename + '/' + full.mol_index + '">PDF</a>'
+                    }
+                }, {
+                    "data": "detail", width: '10%', 'render': function (data, type, full, meta) {
+                        let filename = "{{ filename }}";
+                        let dataset = "{{ dataset }}";
+                        if (dataset === '1') {
+                            return '<a class="ui teal label" href="/deploy/optadmet/result/' + filename + '/' + full.mol_index + '/1">Detail</a>'
+                        } else {
+                            return '<a class="ui teal label" href="/deploy/optadmet/result/' + filename + '/' + full.mol_index + '/2">Detail</a>'
+                        }
+                    }
+                },
+            ];
+        {% endif %}
+        
+        {% if property_name|length == 1 %}
+        var table = $('#basic-table').DataTable({
+            "pageLength": 10,
+            "aLengthMenu": [5, 10, 20],
+            "bAutoWidth": false,
+            stateSave: true,
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+                "data": {
+                    'filename': '{{ filename }}',
+                    'property': '{{ property }}',
+                }
+            },
+            data: '',
+            "columns": property,
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "searchPlaceholder": "Search by ID",
+            },
+            "order": [],
+            "columnDefs": [{orderable:false, target: [0,1,2,3,5,6,7]}],
+            "searching": false,
+        });
+        {% else %}
+        var table = $('#basic-table').DataTable({
+            "pageLength": 10,
+            "aLengthMenu": [5, 10, 20],
+            "bAutoWidth": false,
+            stateSave: true,
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+                "data": {
+                    'filename': '{{ filename }}',
+                    'property': '{{ property }}',
+                }
+            },
+            data: '',
+            "columns": property,
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "searchPlaceholder": "Search by ID",
+            },
+            "order": [],
+            "columnDefs": [{orderable:false, target: [0,1,2,3,6,7,8]}],
+            "searching": false,
+        });
+        {% endif %}
+    }
+
+    $(document).ready(function () {
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}',}
+        });
+        set_datatable_data();
+        select_property.setValue([ ]);
+    });
+</script>

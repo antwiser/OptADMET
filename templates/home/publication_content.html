@@ -1,0 +1,214 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'home/css/pub.css' %}">
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<style>
+    .media img {
+        max-width: 64px;
+    }
+</style>
+<main class="">
+    <div class="container mb-5">
+        <div class="layui-panel d-flex flex-row align-items-center">
+            <svg t="1637670282266" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                 p-id="6954" width="28" height="28">
+                <path d="M509.1328 513.1264m-450.816 0a450.816 450.816 0 1 0 901.632 0 450.816 450.816 0 1 0-901.632 0Z"
+                      fill="#E9ECFF" p-id="6955"></path>
+                <path d="M372.6848 239.4624H285.2864c-16.1792 0-29.2864 13.1072-29.2864 29.2864v478.464c0 16.1792 13.1072 29.2864 29.2864 29.2864h87.3984c16.1792 0 29.2864-13.1072 29.2864-29.2864V268.7488c0-16.128-13.1072-29.2864-29.2864-29.2864z m-43.6736 502.3744a27.9552 27.9552 0 1 1 0.00512-55.91552 27.9552 27.9552 0 0 1-0.00512 55.91552z"
+                      fill="#757BF2" p-id="6956"></path>
+                <path d="M794.2144 721.1008l-73.1136-430.3872a29.29664 29.29664 0 0 0-33.792-23.9616l-86.1696 14.6432a29.184 29.184 0 0 0-23.3984 21.4528V268.8c0-16.1792-13.1072-29.2864-29.2864-29.2864H461.1072c-16.1792 0-29.2864 13.1072-29.2864 29.2864v478.464c0 16.1792 13.1072 29.2864 29.2864 29.2864h87.3984c16.1792 0 29.2864-13.1072 29.2864-29.2864V318.464l72.5504 427.0592a29.29664 29.29664 0 0 0 33.792 23.9616l86.1696-14.6432c15.9232-2.6624 26.624-17.8176 23.9104-33.7408z m-289.4336 20.736a27.9552 27.9552 0 1 1 0.00512-55.91552 27.9552 27.9552 0 0 1-0.00512 55.91552z m216.6784-13.2608a28.5184 28.5184 0 0 1-32.8704-23.296 28.5184 28.5184 0 0 1 23.296-32.8704 28.5184 28.5184 0 0 1 32.8704 23.296 28.42624 28.42624 0 0 1-23.296 32.8704z"
+                      fill="#6C6CEA" p-id="6957"></path>
+                <path d="M721.1008 290.7136a29.29664 29.29664 0 0 0-33.792-23.9616l-86.1696 14.6432a29.184 29.184 0 0 0-23.3984 21.4528V268.8c0-16.1792-13.1072-29.2864-29.2864-29.2864H461.1072c-16.1792 0-29.2864 13.1072-29.2864 29.2864v478.464c0 16.1792 13.1072 29.2864 29.2864 29.2864h17.8688a446.73024 446.73024 0 0 0 98.816-49.9712V318.464l60.9792 358.912c52.8384-50.688 93.3376-114.1248 116.5824-185.344l-34.2528-201.3184z m-216.32 451.1232a27.9552 27.9552 0 1 1 0.00512-55.91552 27.9552 27.9552 0 0 1-0.00512 55.91552z"
+                      fill="#757BF2" p-id="6958"></path>
+                <path d="M372.6848 239.4624H285.2864c-16.1792 0-29.2864 13.1072-29.2864 29.2864v370.944a447.4112 447.4112 0 0 0 145.9712-42.9568V268.7488c0-16.128-13.1072-29.2864-29.2864-29.2864zM601.1904 281.3952a29.184 29.184 0 0 0-23.3984 21.4528V268.8c0-16.1792-13.1072-29.2864-29.2864-29.2864H461.1072c-16.1792 0-29.2864 13.1072-29.2864 29.2864v311.9104a452.736 452.736 0 0 0 145.9712-137.5232V318.464l16.64 97.9456c25.0368-43.52 43.008-91.648 52.3776-142.7968l-45.6192 7.7824z"
+                      fill="#8486F8" p-id="6959"></path>
+                <path d="M372.6848 239.4624H285.2864c-16.1792 0-29.2864 13.1072-29.2864 29.2864v182.8864a451.87584 451.87584 0 0 0 145.9712-93.8496V268.7488c0-16.128-13.1072-29.2864-29.2864-29.2864zM431.8208 268.7488v57.6c22.784-26.4704 42.496-55.6032 58.7264-86.8864h-29.44c-16.1792 0-29.2864 13.1584-29.2864 29.2864z"
+                      fill="#8D92F8" p-id="6960"></path>
+            </svg>
+            <div style="padding: 10px;">Related Publications</div>
+        </div>
+
+        <div class="ui items">
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/1.jpg' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">[1] Semi-automated workflow for molecular pair analysis and QSAR-assisted transformation space expansion</a>
+                    <div class="description">
+                        <span>Yang, ZY., Fu, L., Lu, AP. et al.</span>
+                    </div>
+                    <div class="meta">
+                        <p>J Cheminform 13, 86 (2021)</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/2.jpeg' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">[2] QSAR-assisted-MMPA to expand chemical transformation space for lead optimization</a>
+                    <div class="description">
+                        <span>Fu L, Yang ZY, Yang ZJ, Yin MZ, Lu AP, Chen X, Liu S, Hou TJ, Cao DS.</span>
+                    </div>
+                    <div class="meta">
+                        <p>Briefings in Bioinformatics, 2021.</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/3.jpg' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">
+                        [3] Systematic Modeling of logD7.4 Based on Ensemble Machine Learning, Group Contribution, and Matched Molecular Pair Analysis
+                    </a>
+                    <div class="description">
+                        <span>Fu L, Liu L, Yang ZJ, Li P, Ding JJ, Yun YH, Lu AP, Hou TJ, Cao DS.</span>
+                    </div>
+                    <div class="meta">
+                        <p>Journal of Chemical Information and Modeling 2020;60:63-76.</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/4.jpg' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">
+                        [4] Chapter 12 AI via Matched Molecular Pair Analysis.
+                    </a>
+                    <div class="description">
+                        <span>3. Griffen E, Dossetter A, Leach AG.</span>
+                    </div>
+                    <div class="meta">
+                        <p>Artificial Intelligence in Drug Discovery. The Royal Society of Chemistry, 2021, pp 250-271.</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/5.gif' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">
+                        [5] Can we accelerate medicinal chemistry by augmenting the chemist with Big Data and artificial intelligence?
+                    </a>
+                    <div class="description">
+                        <span>4. Griffen EJ, Dossetter AG, Leach AG et al.</span>
+                    </div>
+                    <div class="meta">
+                        <p>Drug Discovery Today 2018;23:1373-1384.</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/6.jpg' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">
+                        [6] Learning Medicinal Chemistry Absorption, Distribution, Metabolism, Excretion, and Toxicity (ADMET) Rules from Cross-Company Matched Molecular Pairs Analysis (MMPA)
+                    </a>
+                    <div class="description">
+                        <span>5. Kramer C, Ting A, Zheng H, Hert J, Schindler T, Stahl M, Robb G, Crawford JJ, Blaney J, Montague S, Leach AG, Dossetter AG, Griffen EJ.</span>
+                    </div>
+                    <div class="meta">
+                        <p>Journal of Medicinal Chemistry 2018;61:3277-3292.</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/7.jpg' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">
+                        [7] Matched molecular pair analysis: significance and the impact of experimental uncertainty
+                    </a>
+                    <div class="description">
+                        <span>Kramer C, Fuchs JE, Whitebread S, Gedeck P, Liedl KR.</span>
+                    </div>
+                    <div class="meta">
+                        <p>Journal of Medicinal Chemistry 2014;57:3786-3802.</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="ui tiny image">
+                    <img class="mr-3 img-fluid img-thumbnail" src="{% static 'pub/img/8.jpg' %}"
+                         alt="Generic placeholder image">
+                </div>
+                <div class="content" style="padding-top: .5rem">
+                    <a class="header" style="font-size: 1rem;">
+                        [8] Matched molecular pair analysis in drug discovery
+                    </a>
+                    <div class="description">
+                        <span>Dossetter AG, Griffen EJ, Leach AG.</span>
+                    </div>
+                    <div class="meta">
+                        <p>Drug Discovery Today 2013, 18(15-16): 724-731.</p>
+                    </div>
+                    <div class="extra">
+
+                    </div>
+                    <div class="red-font">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>

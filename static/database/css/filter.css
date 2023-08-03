@@ -1,0 +1,65 @@
+/*ol, ul {*/
+/*    padding-left: 0;*/
+/*}*/
+
+/*.layui-nav-tree {*/
+/*    width: 100%;*/
+/*}*/
+
+/*.layui-nav-tree .layui-nav-item a {*/
+/*    height: 50px;*/
+/*}*/
+
+/*dl, ol, ul {*/
+/*    margin-top: 0;*/
+/*    margin-bottom: 0;*/
+/*}*/
+
+/*.layui-nav-itemed > .layui-nav-child {*/
+/*    background-color: #fff;*/
+/*}*/
+
+/*.layui-nav-child dd a span {*/
+/*    font-size: .8rem;*/
+/*}*/
+
+/*.layui-nav-tree .layui-nav-item .layui-nav-child a {*/
+/*    height: 30px;*/
+/*    line-height: 30px;*/
+/*}*/
+
+.layui-btn {
+    background-color: #3D4D68;
+}
+
+.layui-btn-primary {
+    background-color: inherit;
+}
+
+.layui-btn-primary:hover {
+    border-color: #3D4D68;
+}
+
+.filter-bar .layui-btn {
+    /*width: 100%;*/
+    max-width: 100%;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.layui-form-item {
+    margin-bottom: .5rem;
+}
+
+.layui-form-label {
+    color: #3D4D68;
+}
+
+#reset-btn {
+    margin-right: 2rem;
+}
+
+.ui.radio.checkbox {
+    margin-left: 1rem;
+}

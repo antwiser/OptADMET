@@ -1,0 +1,11 @@
+*.pyc
+*.out
+*.ini
+*.ipynb
+uwsgi_params
+/static/files
+datas
+/OptADMET/settings.py
+.vscode
+*.pth
+/static/media/download

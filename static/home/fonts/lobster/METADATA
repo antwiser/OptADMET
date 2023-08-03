@@ -1,0 +1,40 @@
+payment: DESIGNER
+
+license: OFL
+url: http://www.impallari.com
+category: handwriting
+subsets: menu,latin,latin-ext,cyrillic,cyrillic-ext
+
+family: Lobster
+
+designer: Pablo Impallari
+
+description: <p>The Lobster font took a different approach. The new Open Type fonts give us the \
+  possibility to have multiple versions of each letter, and that's exactly what we are doing: \
+  Instead of compromising the design of our letters to force connections, we do \
+  what lettering artist do. We draw many versions of each letter and a lot \
+  of different letter-pairs (aka "ligatures") so we always use the best possible variation \
+  of each letter depending of the context of the letter inside each word. All this happens \
+  automatically in any browser that supports ligatures.</p>
+
+# cd ~/src/font-optimizer/; ./subset.pl -v \
+#     --exclude="smcp,ordn,sups,sinf,subs,dlig,frac" \
+#     --chars="Lobster Каилрц()" \
+#     ~/googlefontdirectory/lobster/src/Lobster-Cyrillic-TTF.ttf \
+#     ~/googlefontdirectory/lobster/Lobster.menu;
+# cd ~/googlefontdirectory/lobster/;
+
+# rm *log *.latin *.latin-ext *.cyrillic+latin *.cyrillic-ext+latin *.greek+latin *.greek-ext+latin;
+# for family in lobster; do
+#    for font in `ls -1 $family/*ttf | cut -d. -f1`; do
+#        for subset in \
+#            latin latin-ext \
+#            cyrillic+latin cyrillic-ext+latin; do
+#            echo subset.py --null --nmr --roundtrip --namelist --script \
+#                --subset=$subset $font.ttf $font.$subset;
+#            python tools/subset/subset.py --null --nmr --roundtrip \
+#                --namelist --script --subset=$subset \
+#                $font.ttf $font.$subset > $font.$subset.log;
+#        done;
+#    done;
+# done;

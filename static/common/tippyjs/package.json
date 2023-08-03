@@ -1,0 +1,213 @@
+{
+  "_args": [
+    [
+      "tippy.js",
+      "/home/antin"
+    ]
+  ],
+  "_from": "tippy.js@latest",
+  "_hasShrinkwrap": false,
+  "_id": "tippy.js@6.3.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/tippy.js",
+  "_nodeVersion": "14.15.5",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/tippy.js_6.3.1_1614320091458_0.6013269460371575"
+  },
+  "_npmUser": {
+    "email": "cc.glows@gmail.com",
+    "name": "atomiks"
+  },
+  "_npmVersion": "6.14.11",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "tippy.js",
+    "raw": "tippy.js",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/tippy.js/-/tippy.js-6.3.1.tgz",
+  "_shasum": "3788a007be7015eee0fd589a66b98fb3f8f10181",
+  "_shrinkwrap": null,
+  "_spec": "tippy.js",
+  "_where": "/home/antin",
+  "author": {
+    "name": "atomiks"
+  },
+  "babel": {
+    "extends": "./.config/babel.config"
+  },
+  "browserslist": [
+    "> 0.5%",
+    "not dead",
+    "not safari < 8"
+  ],
+  "bugs": {
+    "url": "https://github.com/atomiks/tippyjs/issues"
+  },
+  "bundlesize": [
+    {
+      "path": "dist/tippy-bundle.umd.min.js",
+      "maxSize": "10 kB"
+    },
+    {
+      "path": "headless/dist/tippy-headless.umd.min.js",
+      "maxSize": "10 kB"
+    },
+    {
+      "path": "dist/tippy.umd.min.js",
+      "maxSize": "10 kB"
+    },
+    {
+      "path": "dist/tippy.css",
+      "maxSize": "5 kB"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Brett Zamir"
+    }
+  ],
+  "dependencies": {
+    "@popperjs/core": "^2.8.3"
+  },
+  "description": "The complete tooltip, popover, dropdown, and menu solution for the web",
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-typescript": "^7.8.3",
+    "@testing-library/dom": "^6.11.0",
+    "@types/node": "^12.12.25",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
+    "autoprefixer": "^9.7.4",
+    "babel-jest": "^25.3.0",
+    "babel-plugin-dev-expression": "^0.2.2",
+    "bundlesize": "^0.18.0",
+    "colorette": "^1.1.0",
+    "core-js": "^3.6.4",
+    "cross-env": "^7.0.0",
+    "cssnano": "^4.1.10",
+    "dotenv": "^8.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "husky": "^3.1.0",
+    "jest": "^25.3.0",
+    "jest-environment-jsdom-fourteen": "^1.0.1",
+    "jest-image-snapshot": "^2.12.0",
+    "jest-puppeteer": "^4.4.0",
+    "jest-puppeteer-docker": "^1.3.2",
+    "lint-staged": "^9.5.0",
+    "postcss": "^7.0.26",
+    "poster": "0.0.9",
+    "prettier": "^2.0.1",
+    "promise": "^8.0.3",
+    "puppeteer": "^2.1.1",
+    "rimraf": "^3.0.0",
+    "rollup": "^1.29.1",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.0.2",
+    "rollup-plugin-css-only": "^1.0.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-livereload": "^1.0.4",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-terser": "^5.2.0",
+    "sass": "^1.25.0",
+    "serve": "^11.3.0",
+    "tsd": "^0.11.0",
+    "typescript": "^3.7.5"
+  },
+  "directories": {},
+  "dist": {
+    "fileCount": 45,
+    "integrity": "sha512-JnFncCq+rF1dTURupoJ4yPie5Cof978inW6/4S6kmWV7LL9YOSEVMifED3KdrVPEG+Z/TFH2CDNJcQEfaeuQww==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJgOJHbCRA9TVsSAnZWagAAbqYP/iXXuE1YTub7PDecEZy6\nc30VCboMTh8Uh8H+8WePH9Wq5d1uQz91LFRry7grkK9YS3AmoZXExWYocV5R\nekG8T9sApmIRSfn//Av4LLiSTBJRs8Xx1avj6Bzdv7yMKd9p1++Ci6BNcm0F\nUnPwwCPnChwdQnN+SqVFlKxBu+mL3qQ91cqO2d62eug6BMqd/JVQEBhbqUwH\nV0E6Uj6IC/jloeEt+u9MtzExYqYzgs/dog/8c/rrB1QOC9kU6xt3OtdamvYq\npYdRZJ4TNzhJCRg6RSWxke2We7yejWXEK+v9ddoPSTWXl2yJOhJXlhUtRl/V\nW50hp+r3yO0LyOJ3v03VgrHtlgoA2z6OaLheq1XC9R7KpSgmJlrKP9Jt95nl\nxtREo7edxSOvIO/riL72+5nZk05AfDkg94GOpBnWFrNSgbECQEvKvEBb6Ujr\nFXCea+C1xB0lgfa4UImSbSY3FDP2TMjbjAvvTc4mgPWDB23YTV8Z6EzrltTE\nhWhmI2a6I+p/sGzoFAlG2QpLuU45iTMUTIDqJAt2l83/Ro7rrugqr3rmtR/C\nhHz6SDo8iT9xkCfxVQVKLmB1VvKwejkIAvVIvwbA+NbPgA2JelTwQ3R4Daji\n6uU7HHntFAj2GdEabTsjoT89bz/rALhhhXuuupSttlAwR1Mn/aUOpyTW64En\nAbLH\r\n=rw35\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "3788a007be7015eee0fd589a66b98fb3f8f10181",
+    "tarball": "https://registry.npmjs.org/tippy.js/-/tippy.js-6.3.1.tgz",
+    "unpackedSize": 2021152
+  },
+  "eslintConfig": {
+    "extends": "./.config/eslint.config"
+  },
+  "gitHead": "3d7e03ab8c079259e931a7b8349d838c039659af",
+  "homepage": "https://atomiks.github.io/tippyjs/",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "jest": {
+    "preset": "./.config/jest.config"
+  },
+  "keywords": [
+    "dropdown",
+    "popover",
+    "popper",
+    "popup",
+    "tippy",
+    "tippy.js",
+    "tooltip"
+  ],
+  "license": "MIT",
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint . --ext .ts,.js",
+      "git add",
+      "jest --findRelatedTests"
+    ],
+    "{build,src,test,website/src}/**/*.{ts,js,json,css,scss,md}": [
+      "git add",
+      "prettier --write"
+    ]
+  },
+  "main": "dist/tippy.cjs.js",
+  "maintainers": [
+    {
+      "name": "atomiks",
+      "email": "cc.glows@gmail.com"
+    }
+  ],
+  "module": "dist/tippy.esm.js",
+  "name": "tippy.js",
+  "optionalDependencies": {},
+  "prettier": {
+    "bracketSpacing": false,
+    "proseWrap": "always",
+    "singleQuote": true
+  },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atomiks/tippyjs.git"
+  },
+  "scripts": {
+    "build": "node build/index.js && rollup -c .config/rollup.config.js && bundlesize",
+    "build:visual": "cross-env NODE_ENV=test rollup -c .config/rollup.config.js",
+    "clean": "rimraf dist/ themes/ animations/ coverage/ .devserver/ .cache/ ./index.d.ts",
+    "dev": "cross-env NODE_ENV=dev rollup -c .config/rollup.config.js --watch",
+    "format": "prettier --write \"**/*.{js,ts,json,md,mdx,scss,css}\" --ignore-path .config/.prettierignore",
+    "lint": "eslint . --ext .ts,.js",
+    "prepare": "yarn clean && yarn build",
+    "serve": "serve test/visual",
+    "test": "yarn test:types && yarn test:dom && yarn test:functional",
+    "test:dom": "jest unit integration --coverage",
+    "test:functional": "jest functional",
+    "test:types": "tsc && tsd"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "types": "index.d.ts",
+  "unpkg": "dist/tippy-bundle.umd.min.js",
+  "version": "6.3.1"
+}

@@ -1,0 +1,2925 @@
+{% load static %}
+{% load sci_format %}
+{% load str2float %}
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'database/css/general.css' %}">
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<style>
+    .trans-info td svg {
+        max-height: 200px;
+    }
+</style>
+<main id="main">
+    <div class="layui-col-md8 layui-col-md-offset2 p-4 mb-4 block">
+        <h2 class='mb-3 d-flex justify-content-between align-self-center'>
+            <div class='d-flex align-self-center'>
+                Transformation information
+            </div>
+            <div class='float-end'>
+                <button class="ui inverted red button" onclick="download_pdf()"><i
+                    class="icon download"></i>
+                    Download PDF
+                </button>
+            </div>
+        </h2>
+        <table class="ui celled table trans-info">
+            <thead>
+                <tr class="text-center">
+                    <th data-label="" class='middle aligned' colspan='2'>Original Molecule</th>
+                    <th data-label="" class='middle aligned'>Transformation</th>
+                    <th data-label="" class='middle aligned' colspan='2'>Generated Molecule</th>
+                    <th data-label="" class='middle aligned'>Original Transformation</th>
+                    <th data-label="" class='middle aligned'>Direction of change</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="text-center">
+                {% comment %} <th data-label="" class='middle aligned'>Original Molecule</th> {% endcomment %}
+                {% comment %} <td data-label="" class='middle aligned' colspan='2'>{{ ori_data.smiles }}</td> {% endcomment %}
+                    <td data-label="" class='middle aligned'>{{ structure_ori|safe }}</td>
+                    <td data-label="" class='middle aligned'>
+                        <a class="ui teal label" onclick="copytext('{{ ori_data.smiles }}')">smiles</a>
+                    </td>
+                {% comment %} <th data-label="" class='middle aligned'>Transformation</td> {% endcomment %}
+                
+                {% comment %} <td data-label="" class='middle aligned'>{{ trans_expre }}</td> {% endcomment %}
+                    <td data-label="" class='middle aligned'>{{ transformation|safe }}</td>
+                {% comment %} <th data-label="" class='middle aligned'>Generated Molecule</td> {% endcomment %}
+                {% comment %} <td data-label="" class='middle aligned' colspan='2'>{{ data.smiles }}</td> {% endcomment %}
+                    <td data-label="" class='middle aligned'>{{ structure|safe }}</td>
+                    <td data-label="" class='middle aligned'>
+                        <a class="ui teal label" onclick="copytext('{{ data.smiles }}')">smiles</a>
+                    </td>
+                    {% if data_idx == '1' %}
+                        <td data-label="" class='middle aligned'>
+                            <a href="/deploy/optadmet/optadmet/sdetail/{{ data.structure_id }}/">{{ data.structure_id }}</a>
+                        </td>
+                    {% else %}
+                        <td data-label="" class='middle aligned'>
+                            <a href="/deploy/optadmet/optadmet/psdetail/{{ data.structure_id }}/">{{ data.structure_id }}</a>
+                        </td>
+                    {% endif %}
+                    <td data-label="" class='middle aligned'>{{ direction }} of original transformation</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class='mb-3 d-flex justify-content-between align-self-center'>
+                Property information
+        </h2>
+        <div class="ui two column grid">
+            <div class="column">
+                <div class="ui raised segment">
+                    <a class="ui teal ribbon label">Physicochemical Property</a>
+                    <table class="table table-sm table-borderless table-striped mb-0">
+                        <tbody class="text-center">
+                        <tr>
+                            <td class="text-left" width="30%">logS</td>
+                            <td width="20%">{{ ori_data.LogS|floatformat:3 }}</td>
+                            <td width="20%">{{ data.LogS|floatformat:3 }}</td>
+                            <td width="10%">
+                                {% if ori_data.LogS > data.LogS %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.LogS == data.LogS %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%"></td>
+                            <td width="10%">
+                                <i class="fas fa-info-circle"
+                                   data-tippy-content="Log of the aqueous solubility. Optimal: -4~0.5 log mol/L"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">logP</td>
+                            <td>{{ ori_data.LogP|floatformat:3 }}</td>
+                            <td>{{ data.LogP|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.LogP > data.LogP %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.LogP == data.LogP %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td>
+                                <i class="fas fa-info-circle"
+                                   data-tippy-content="Log of the octanol/water partition coefficient. Optimal: 0~3"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">logD</td>
+                            <td>{{ ori_data.LogD|floatformat:3 }}</td>
+                            <td>{{ data.LogD|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.LogD > data.LogD %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.LogD == data.LogD %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td>
+                                <i class="fas fa-info-circle"
+                                   data-tippy-content="logP at physiological pH 7.4. Optimal: 1~3"></i>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p></p>
+                    <a class="ui blue ribbon label">Absorption</a>
+                    <table class="table table-sm table-borderless table-striped mb-0">
+                        <tbody class="text-center">
+                        <tr>
+                            <td class="text-left">Caco-2 Permeability</td>
+                            <td>{{ ori_data.9|floatformat:3 }}</td>
+                            <td>{{ data.9|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.9 > data.9 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.9 == data.9 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if data.9 > -5.15 %}
+                                    <i class="fas fa-circle text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Optimal: higher than -5.15 Log unit"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" width="30%">MDCK Permeability</td>
+                            <td width="20%">{{ ori_data.MDCK|sci_format }}</td>
+                            <td width="20%">{{ data.MDCK|sci_format }}</td>
+                            <td width="10%">
+                                {% if ori_data.MDCK > data.MDCK %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.MDCK == data.MDCK %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%">
+                                {% if data.MDCK > 0.000002 %}
+                                    <i class="fas fa-circle text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td width="10%"><i class="fas fa-info-circle"
+                                               data-tippy-content="low permeability: < 2 × 10−6 cm/s<br>medium permeability: 2–20 × 10−6 cm/s<br>high passive permeability: > 20 × 10−6 cm/s"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Pgp-inhibitor</td>
+                            <td>
+                                {% with score=ori_data.6 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.6 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td width="10%">
+                                {% if ori_data.MDCK > data.MDCK %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.MDCK == data.MDCK %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.6 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being Pgp-inhibitor"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Pgp-substrate</td>
+                            <td>
+                                {% with score=ori_data.7 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.7 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.7 > data.7 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.7 == data.7 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.7 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: substrate; Category 0: Non-substrate;<br>The output value is the probability of being Pgp-substrate"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">HIA</td>
+                            <td>
+                                {% with score=ori_data.HIA %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.HIA %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.HIA > data.HIA %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.HIA == data.HIA %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.HIA %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Human Intestinal Absorption<br>Category 1: HIA+( HIA < 30%); Category 0: HIA-( HIA >= 30%); The output value is the probability of being HIA+"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">F<sub>20%</sub></td>
+                            <td>
+                                {% with score=ori_data.9 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.9 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.9 > data.9 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.9 == data.9 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.9 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="20% Bioavailability<br>Category 1: F<sub>20%</sub>+ (bioavailability < 20%); Category 0: F<sub>20%</sub>- (bioavailability ≥ 20%); The output value is the probability of being F<sub>20%</sub>+"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">F<sub>30%</sub></td>
+                            <td>
+                                {% with score=ori_data.10 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.10 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.10 > data.10 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.10 == data.10 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.10 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="30% Bioavailability<br>Category 1: F<sub>30%</sub>+ (bioavailability < 30%); Category 0: F<sub>30%</sub>- (bioavailability ≥ 30%); The output value is the probability of being F<sub>30%</sub>+"></i>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p></p>
+                    <a class="ui brown ribbon label">Distribution</a>
+                    <table class="table table-sm table-borderless table-striped mb-0">
+                        <tbody class="text-center">
+                        <tr>
+                            <td class="text-left" width="30%">PPB</td>
+                            <td width="20%">{{ ori_data.PPB|floatformat:3 }}%</td>
+                            <td width="20%">{{ data.PPB|floatformat:3 }}%</td>
+                            <td width="10%">
+                                {% if ori_data.PPB > data.PPB %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.PPB == data.PPB %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%">
+                                {% if data.PPB < 90 %}
+                                    <i class="fas fa-circle text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td width="10%"><i class="fas fa-info-circle"
+                                               data-tippy-content="Plasma Protein Binding<br>Optimal: < 90%. Drugs with high protein-bound may have a low therapeutic index."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">VD</td>
+                            <td>{{ ori_data.VDss|floatformat:3 }}</td>
+                            <td>{{ data.VDss|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.VDss > data.VDss %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.VDss == data.VDss %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if data.VDss >= 0.04 and data.VDss <= 20 %}
+                                    <i class="fas fa-circle text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Volume Distribution<br>Optimal: 0.04-20L/kg"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">BBB Penetration</td>
+                            <td>
+                                {% with score=ori_data.BBB %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.BBB %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.BBB > data.BBB %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.BBB == data.BBB %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.BBB %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Blood-Brain Barrier Penetration<br>Category 1: BBB+; Category 0: BBB-; The output value is the probability of being BBB+"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Fu</td>
+                            <td>{{ ori_data.Fu|floatformat:3 }}%</td>
+                            {#                            <td>{{ data.Fu|cut:"%"|str2float|floatformat:3 }}%</td>#}
+                            <td>{{ data.Fu|floatformat:3 }}%</td>
+                            <td>
+                                {% if ori_data.Fu > data.Fu %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.Fu == data.Fu %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {#                                {% if data.Fu|cut:"%"|str2float < 5 %}#}
+                                {% if data.Fu < 5 %}
+                                    <i class="fas fa-circle text-danger"></i>
+                                {% else %}
+                                    <i class="fas fa-circle text-success"></i>
+                                {% endif %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="The fraction unbound in plasms<br>Low: <5%; Middle: 5~20%; High: > 20%"></i>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p></p>
+                    <a class="ui orange ribbon label">Metabolism</a>
+                    <table class="table table-sm table-borderless table-striped mb-0">
+                        <tbody class="text-center">
+                        <tr>
+                            <td class="text-left" width="30%">CYP1A2 inhibitor</td>
+                            <td width="20%">
+                                {% with score=ori_data.17 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td width="20%">
+                                {% with score=data.17 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.17 > data.17 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.17 == data.17 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%"></td>
+                            <td width="10%"><i class="fas fa-info-circle"
+                                               data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP1A2 substrate</td>
+                            <td>
+                                {% with score=ori_data.18 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.18 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.18 > data.18 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.18 == data.18 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP2C19 inhibitor</td>
+                            <td>
+                                {% with score=ori_data.19 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.19 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.19 > data.19 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.19 == data.19 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP2C19 substrate</td>
+                            <td>
+                                {% with score=ori_data.20 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.20 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.20 > data.20 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.20 == data.20 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP2C9 inhibitor</td>
+                            <td>
+                                {% with score=ori_data.21 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.21 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.21 > data.21 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.21 == data.21 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP2C9 substrate</td>
+                            <td>
+                                {% with score=ori_data.22 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.22 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.22 > data.22 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.22 == data.22 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP2D6 inhibitor</td>
+                            <td>
+                                {% with score=ori_data.23 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.23 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.23 > data.23 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.23 == data.23 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP2D6 substrate</td>
+                            <td>
+                                {% with score=ori_data.24 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.24 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.24 > data.24 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.24 == data.24 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP3A4 inhibitor</td>
+                            <td>
+                                {% with score=ori_data.25 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.25 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.25 > data.25 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.25 == data.25 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Inhibitor; Category 0: Non-inhibitor;<br>The output value is the probability of being inhibitor."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">CYP3A4 substrate</td>
+                            <td>
+                                {% with score=ori_data.26 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.26 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.26 > data.26 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.26 == data.26 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Substrate; Category 0: Non-substrate;<br>The output value is the probability of being substrate."></i>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p></p>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui segment">
+                    <a class="ui purple ribbon label">Excretion</a>
+                    <table class="table table-sm table-borderless table-striped mb-0">
+                        <tbody class="text-center">
+                        <tr>
+                            <td class="text-left" width="30%">CL</td>
+                            <td width="20%">{{ ori_data.CL|floatformat:3 }}</td>
+                            <td width="20%">{{ data.CL|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.CL > data.CL %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.CL == data.CL %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%">
+                                {% if data.CL >= 5 %}
+                                    <i class="fas fa-circle text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-circle text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td width="10%"><i class="fas fa-info-circle"
+                                               data-tippy-content="Clearance<br>High: >15 mL/min/kg; moderate: 5-15 mL/min/kg; low: <5 mL/min/kg"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">T<sub>1/2</sub></td>
+                            <td>
+                                {{ ori_data.T12|floatformat:3 }}
+                            </td>
+                            <td>
+                                {{ data.T12|floatformat:3 }}
+                            </td>
+                            <td>
+                                {% if ori_data.T12 > data.T12 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.T12 == data.T12 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: long half-life ; Category 0: short half-life;<br>long half-life: >3h; short half-life: <3h<br>The output value is the probability of having long half-life."></i>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p></p>
+                    <a class="ui red ribbon label">Toxicity</a>
+                    <table class="table table-sm table-borderless table-striped mb-0">
+                        <tbody class="text-center">
+                        <tr>
+                            <td class="text-left" width="30%">hERG Blockers</td>
+                            <td width="20%">
+                                {% with score=ori_data.hERG %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td width="20%">
+                                {% with score=data.hERG %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td width="10%">
+                                {% if ori_data.hERG > data.hERG %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.hERG == data.hERG %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%">
+                                {% with score=data.hERG %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td width="10%"><i class="fas fa-info-circle"
+                                               data-tippy-content="Category 1: active; Category 0: inactive;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">H-HT</td>
+                            <td>
+                                {% with score=ori_data.30 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.30 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.30 > data.30 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.30 == data.30 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.30 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Human Hepatotoxicity<br>Category 1: H-HT positive(+); Category 0: H-HT negative(-);<br>The output value is the probability of being toxic."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">DILI</td>
+                            <td>
+                                {% with score=ori_data.DILI %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.DILI %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.DILI > data.DILI %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.DILI == data.DILI %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.DILI %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Drug Induced Liver Injury.<br>Category 1: drugs with a high risk of DILI; Category 0: drugs with no risk of DILI. The output value is the probability of being toxic."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">AMES Toxicity</td>
+                            <td>
+                                {% with score=ori_data.Ames %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.Ames %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.Ames > data.Ames %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.Ames == data.Ames %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.Ames %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Ames positive(+); Category 0: Ames negative(-);<br>The output value is the probability of being toxic."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Rat Oral Acute Toxicity</td>
+                            <td>
+                                {% with score=ori_data.ROA %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.ROA %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.ROA > data.ROA %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.ROA == data.ROA %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.ROA %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 0: low-toxicity; Category 1: high-toxicity;<br>The output value is the probability of being highly toxic."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">FDAMDD</td>
+                            <td>
+                                {% with score=ori_data.FDAMDD %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.FDAMDD %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.FDAMDD > data.FDAMDD %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.FDAMDD == data.FDAMDD %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.FDAMDD %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Maximum Recommended Daily Dose<br>Category 1: FDAMDD (+); Category 0: FDAMDD (-)<br>The output value is the probability of being positive."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Skin Sensitization</td>
+                            <td>
+                                {% with score=ori_data.SkinSen %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.SkinSen %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.SkinSen > data.SkinSen %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.SkinSen == data.SkinSen %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.SkinSen %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: Sensitizer; Category 0: Non-sensitizer;<br>The output value is the probability of being sensitizer."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Carcinogencity</td>
+                            <td>
+                                {% with score=ori_data.Carcinogenicity %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.Carcinogenicity %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.Carcinogenicity > data.Carcinogenicity %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.Carcinogenicity == data.Carcinogenicity %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.Carcinogenicity %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: carcinogens; Category 0: non-carcinogens;<br>The output value is the probability of being toxic."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Eye Corrosion</td>
+                            <td>
+                                {% with score=ori_data.EC %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.EC %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.EC > data.EC %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.EC == data.EC %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.EC %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: corrosives ; Category 0: noncorrosives<br>The output value is the probability of being corrosives."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Eye Irritation</td>
+                            <td>
+                                {% with score=ori_data.EI %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.EI %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.EI > data.EI %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.EI == data.EI %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.EI %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: irritants ; Category 0: nonirritants<br>The output value is the probability of being irritants."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">Respiratory Toxicity</td>
+                            <td>
+                                {% with score=ori_data.Respiratory %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.Respiratory %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.Respiratory > data.Respiratory %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.Respiratory == data.Respiratory %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.Respiratory %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: respiratory toxicants; Category 0: respiratory nontoxicants<br>The output value is the probability of being toxic."></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4" style="font-weight: 700;text-align: left">
+                                <a class="ui teal tag label">Environmental Toxicity</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" width="30%">Bioconcentration Factors</td>
+                            <td width="20%">{{ ori_data.BCF|floatformat:3 }}</td>
+                            <td width="20%">{{ data.BCF|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.BCF > data.BCF %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.BCF == data.BCF %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%"></td>
+                            <td width="10%"><i class="fas fa-info-circle"
+                                               data-tippy-content="Bioconcentration factors are used for considering secondary poisoning potential and assessing risks to human health via the food chain.<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">IGC<sub>50</sub></td>
+                            <td>{{ ori_data.IGC50|floatformat:3 }}</td>
+                            <td>{{ data.IGC50|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.IGC50 > data.IGC50 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.IGC50 == data.IGC50 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Tetrahymena pyriformis 50 percent growth inhibition concentration<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">LC<sub>50</sub>FM</td>
+                            <td>{{ ori_data.LC50|floatformat:3 }}</td>
+                            <td>{{ data.LC50|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.LC50 > data.LC50 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.LC50 == data.LC50 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="96-hour fathead minnow 50 percent lethal concentration<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">LC<sub>50</sub>DM</td>
+                            <td>{{ ori_data.LC50DM|floatformat:3 }}</td>
+                            <td>{{ data.LC50DM|floatformat:3 }}</td>
+                            <td>
+                                {% if ori_data.LC50DM > data.LC50DM %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.LC50DM == data.LC50DM %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="48-hour daphnia magna 50 percent lethal concentration<br>The unit is −log10[(mg/L)/(1000*MW)]."></i>
+                            </td>
+                        </tr>
+                        <tr></tr>
+
+
+                        <tr>
+                            <td colspan="4" style="font-weight: 700;text-align: left">
+                                <a class="ui teal tag label">Tox21 Pathway</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left" width="30%">NR-AR</td>
+                            <td width="20%">
+                                {% with score=ori_data.44 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td width="20%">
+                                {% with score=data.44 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.44 > data.44 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.44 == data.44 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td width="10%">
+                                {% with score=data.44 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td width="10%"><i class="fas fa-info-circle"
+                                               data-tippy-content="Androgen receptor<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">NR-AR-LBD</td>
+                            <td>
+                                {% with score=ori_data.45 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.45 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.45 > data.45 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.45 == data.45 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.45 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Androgen receptor ligand-binding domain<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">NR-AhR</td>
+                            <td>
+                                {% with score=ori_data.46 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.46 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.46 > data.46 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.46 == data.46 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td> 
+                            <td>
+                                {% with score=data.46 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Aryl hydrocarbon receptor<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">NR-Aromatase</td>
+                            <td>
+                                {% with score=ori_data.47 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.47 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.47 > data.47 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.47 == data.47 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.47 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">NR-ER</td>
+                            <td>
+                                {% with score=ori_data.48 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.48 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.48 > data.48 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.48 == data.48 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.48 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Estrogen receptor<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">NR-ER-LBD</td>
+                            <td>
+                                {% with score=ori_data.49 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.49 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.49 > data.49 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.49 == data.49 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.49 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Estrogen receptor ligand-binding domain<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">NR-PPAR-gamma
+                            </td>
+                            <td>
+                                {% with score=ori_data.50 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.50 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.50 > data.50 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.50 == data.50 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.50 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Peroxisome proliferator-activated receptor gamma<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">SR-ARE</td>
+                            <td>
+                                {% with score=ori_data.51 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.51 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.51 > data.51 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.51 == data.51 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.51 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Antioxidant response element<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">SR-ATAD5</td>
+                            <td>
+                                {% with score=ori_data.52 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.52 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.52 > data.52 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.52 == data.52 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.52 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="ATPase family AAA domain-containing protein 5<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">SR-HSE</td>
+                            <td>
+                                {% with score=ori_data.53 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.53 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.53 > data.53 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.53 == data.53 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.53 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Heat shock factor response element<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">SR-MMP</td>
+                            <td>
+                                {% with score=ori_data.54 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.54 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.54 > data.54 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.54 == data.54 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.54 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Mitochondrial membrane potential<br>Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left">SR-p53</td>
+                            <td>
+                                {% with score=ori_data.55 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with score=data.55 %}
+                                    {% if score >= 0 and score <= 0.1 %}
+                                        <span class="font-weight-bold">---</span>
+                                    {% elif score > 0.1 and score <= 0.3 %}
+                                        <span class="font-weight-bold">--</span>
+                                    {% elif score > 0.3 and score <= 0.5 %}
+                                        <span class="font-weight-bold">-</span>
+                                    {% elif score > 0.5 and score <= 0.7 %}
+                                        <span class="font-weight-bold">+</span>
+                                    {% elif score > 0.7 and score <= 0.9 %}
+                                        <span class="font-weight-bold">++</span>
+                                    {% elif score > 0.9 and score <= 1 %}
+                                        <span class="font-weight-bold">+++</span>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% if ori_data.55 > data.55 %}
+                                    <div class="ui mini teal label">⬇</div>
+                                {% elif ori_data.55 == data.55 %}
+                                    <div class="ui mini olive label">=</div>
+                                {% else %}
+                                    <div class="ui mini orange label">⬆</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% with score=data.55 %}
+                                    {% if score >= 0 and score <= 0.3 %}
+                                        <i class="fas fa-circle text-success"></i>
+                                    {% elif score > 0.3 and score <= 0.7 %}
+                                        <i class="fas fa-circle text-warning"></i>
+                                    {% elif score > 0.7 and score <= 1 %}
+                                        <i class="fas fa-circle text-danger"></i>
+                                    {% else %}
+                                        <span class="text-danger">error</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td><i class="fas fa-info-circle"
+                                   data-tippy-content="Category 1: actives ; Category 0: inactives;<br>The output value is the probability of being active."></i>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="{% static 'common/popperjs/core/dist/umd/popper.min.js' %}"></script>
+<script src="{% static 'common/tippyjs/dist/tippy-bundle.umd.min.js' %}"></script>
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>
+<script>
+    tippy('[data-tippy-content]', {
+        maxWidth: 'none',
+        role: 'tooltip',
+        allowHTML: true,
+    });
+
+    function copytext(feature) {
+        var oInput = document.createElement('input');
+        oInput.value = feature;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.className = 'oInput';
+        oInput.style.display = 'none';
+        alert("copy success!");
+    }
+
+    function download_pdf(){
+        $.ajax({
+            type: "POST",
+            url: "{% url 'home:d_download' %}",
+            data: {'csv_filename': "{{ filename }}", 'index': "{{ index }}"},
+            beforeSend: function (xhr, setting) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}")
+            },
+            success: function (result) {
+                var blob = new Blob([result]);
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "{{ filename }}" + "_{{ index }}" + ".pdf";
+                link.click();
+            },
+            error: function (result) {
+            }
+        });
+    }
+</script>

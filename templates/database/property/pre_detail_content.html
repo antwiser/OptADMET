@@ -1,0 +1,353 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'common/semanticUI/semantic.min.css' %}">
+<link rel="stylesheet" href="{% static 'home/css/header.css' %}">
+<link rel="stylesheet" href="{% static 'database/css/general.css' %}">
+<link rel="stylesheet" href="{% static 'database/css/detail.css' %}">
+<script src="{% static 'common/echarts-5.1.2/echarts.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'common/datatable.css' %}">
+<main id="main">
+    <div class="layui-col-md-offset1 layui-col-md10 mb-4 ps-5 pe-5">
+        <div class="block" id="information">
+            <h2>Information</h2>
+            <div class="key-value">
+                <table class="layui-table">
+                    <tbody>
+                    <tr></tr>
+                    <tr>
+                        <td class="key">Transformation</td>
+                        <td class="value" id="transformation_svg">
+                            {{ svg|safe }}
+                        </td>
+                        <td class="key">Left Fragment</td>
+                        <td class="value">
+                            <div class="text-center mt-0 mb-2 structure">
+                                {{ left_fragment|safe }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="key">ID</td>
+                        <td class="value">
+                            {{ global_info.transformation_global_ID }}
+                        </td>
+                        <td class="key">Right Fragment</td>
+                        <td class="value">
+                            <div class="text-center mt-0 mb-2 structure">
+                                {{ right_fragment|safe }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="key" rowspan="3">Distribution</td>
+                        <td class="value" rowspan="3">
+                            <div id="chart-box">
+                                <div id="bar-graph" style="width: 100%;height: 100%;min-width:500px"></div>
+                            </div>
+                        </td>
+                        <td class="key">Average change <i class="fas fa-info-square"
+                                                          data-tippy-content="The average property change value of the specific transformation"></i>
+                        </td>
+                        <td class="value">
+                            {{ global_info.average_change|floatformat:"3" }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="key">Count <i class="fas fa-info-square"
+                                                 data-tippy-content="The number of MMPs of the specific transformation"></i>
+                        </td>
+                        <td class="value">
+                            {{ global_info.count|add:"0" }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="key">Statistical significance <i class="fas fa-info-square"
+                                                                    data-tippy-content="High (P&le;0.05) and Qualified (P>0.05)"></i>
+                        </td>
+                        <td class="value">
+                            {% if global_info.statistical_significance == 1 %}
+                                <span class="badge rounded-pill" style="background-color: #83BC32;">High</span>
+                            {% else %}
+                                <span class="badge rounded-pill" style="background-color: #14A6EC;">Qualified</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr></tr>
+                    <tr>
+                        <td class="key">
+                            Local Environment
+                        </td>
+                        <td class="value" colspan="3">
+                            <table class="layui-table" id="local-table">
+                                <colgroup></colgroup>
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Environment <i class="fas fa-info-square"
+                                                       data-tippy-content="The localized atom of the transform"></i>
+                                    </th>
+                                    <th>Variance <i class="fas fa-info-square"
+                                                    data-tippy-content="The index of overall property change of a specific transformation."></i>
+                                    </th>
+                                    <th>Pairs</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br><br>
+        <div class="block" id="mmp-block">
+            <h2>EXPANDED MMPs</h2>
+            <div class="key-value mt-4">
+                <table class="layui-table" id="mmp-table">
+                    <colgroup></colgroup>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Molecule(L)</th>
+                        <th>Molecule(R)</th>
+                        <th>Value/Label(L): {{ property }}</th>
+                        <th>Value/Label(R): {{ property }}</th>
+                        <th>Change</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="{% static 'common/popperjs/core/dist/umd/popper.min.js' %}"></script>
+<script src="{% static 'common/tippyjs/dist/tippy-bundle.umd.min.js' %}"></script>
+<script src="{% static 'common/semanticUI/semantic.min.js' %}"></script>
+<script>
+    tippy('[data-tippy-content]', {
+        maxWidth: 'none',
+        role: 'tooltip',
+        allowHTML: true,
+        placement: 'right',
+    });
+
+    function chartssize(container, charts) {
+        function getStyle(el, name) {
+            if (window.getComputedStyle) {
+                return window.getComputedStyle(el, null);
+            } else {
+                return el.currentStyle;
+            }
+        }
+
+        var wi = getStyle(container[0], 'width').width;
+        var hi = getStyle(container[0], 'height').height;
+        charts.style.width = wi;
+        charts.style.height = hi;
+    }
+
+    var myChart = echarts.init(document.getElementById('bar-graph'));
+    var increase = {{ global_info.increase_portion }};
+    var decrease = {{ global_info.decrease_portion }};
+    var nochange = {{ global_info.nochange_portion }};
+    var datas = [
+        [
+            {name: 'Increase', value: increase},
+            {name: 'Decrease', value: decrease},
+            {name: 'No change', value: nochange},
+        ],
+    ];
+    var option = {
+        color: ['#83BC32', '#14A6EC', '#FEA531'],
+        tooltip: {
+            trigger: 'item',
+            formatter: '{b}\n{d} %',
+        },
+        legend: {
+            top: '5%',
+            left: 'center'
+        },
+        series: datas.map(function (data, idx) {
+            return {
+                type: 'pie',
+                {#radius: [20, 60],#}
+                radius: ['40%', '70%'],
+                avoidLabelOver: true,
+                left: 'center',
+                itemStyle: {
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    borderRadius: 10,
+                },
+                label: {
+                    show: false,
+                    position: 'center',
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '20',
+                        fontWeight: 'bold',
+                        formatter: '{name|{b}}\n{score|{d} %}',
+                        rich: {
+                            name: {},
+                            score: {}
+                        }
+                    }
+                },
+                labelLine: {
+                    show: false,
+                },
+                data: data,
+            }
+        })
+    };
+    myChart.setOption(option);
+    $(window).on('resize', function () {
+        myChart.resize();
+        {#chartssize($('#chart-box'), $('#bar-graph'));#}
+    });
+
+    function set_datatable_data() {
+        let request_url = '/deploy/optadmet/optadmet/plocal-data-source/' + "{{ global_info.transformation_global_ID }}" + '/';
+        var table = $('#local-table').DataTable({
+            "pageLength": 5,
+            "aLengthMenu": [5, 10, 20],
+            "autoWidth": false,
+            {#stateSave: true,#}
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+            },
+            data: '',
+            "columns": [
+                {
+                    "data": "transformation_local_ID", width: "25%", 'render': function (data, type, full, meta) {
+                        return '<a href="/deploy/optadmet/optadmet/pldetail/' + full.transformation_local_ID + '/">' + full.transformation_local_ID + '</a>'
+                    }
+                }, {
+                    "data": "null", width: "25%", 'render': function (data, type, full, meta) {
+                        let html_text = '';
+                        html_text += '<a class="ui label" style="background-color:#666699;color: #fff">' + full.env_1 + '</a>';
+                        if (full.env_2 !== '[none]') {
+                            html_text += '<a class="ui label" style="background-color:#996699;color: #fff">' + full.env_2 + '</a>';
+                        }
+                        if (full.env_3 !== '[none]') {
+                            html_text += '<a class="ui label" style="background-color:#CC99CC;color: #fff">' + full.env_3 + '</a>';
+                        }
+                        return html_text;
+                    }
+                }, {
+                    "data": "variance", width: "25%", 'render': function (data, type, full, meta) {
+                        if (full.variance === 1) {
+                            return '<span class="badge rounded-pill" style="background-color:#83BC32;">increase</span>';
+                        } else if (full.variance === 2) {
+                            return '<span class="badge rounded-pill" style="background-color:#14A6EC;">decrease</span>';
+                        } else {
+                            return '<span class="badge rounded-pill" style="background-color:orange;">no change</span>';
+                        }
+                    }
+                }, {
+                    "data": "count", width: "25%", 'render': function (data, type, full, meta) {
+                        return full.count;
+                    }
+                },
+            ],
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "processing": "Loading...",
+                "searchPlaceholder": "Search by Drugbank ID",
+            },
+            "ordering": false,
+            "searching": false,
+        });
+    }
+
+    function set_mmp_data() {
+        let request_url = '/deploy/optadmet/optadmet/pmmp-data-source/' + "{{ global_info.transformation_global_ID }}" + '/';
+        var table = $('#mmp-table').DataTable({
+            "pageLength": 5,
+            "aLengthMenu": [5, 10, 20],
+            "autoWidth": false,
+            destroy: true,
+            "serverSide": true,
+            scrollCollapse: true,
+            "pagingType": "simple_numbers",
+            ajax: {
+                "url": request_url,
+                "type": "post",
+            },
+            data: '',
+            "columns": [
+                {
+                    "data": "idx", width: "10%", 'render': function (data, type, full, meta) {
+                        return full.idx;
+                    }
+                }, {
+                    "data": "null", width: "20%", 'render': function (data, type, full, meta) {
+                        return full.molecule_l;
+                    }
+                }, {
+                    "data": "null", width: "20%", 'render': function (data, type, full, meta) {
+                        return full.molecule_r;
+                    }
+                }, {
+                    "data": "value_l", width: "20%", 'render': function (data, type, full, meta) {
+                        return full.value_l.toFixed(3);
+                    }
+                }, {
+                    "data": "value_r", width: "20%", 'render': function (data, type, full, meta) {
+                        return full.value_r.toFixed(3);
+                    }
+                }, {
+                    "data": "change", width: "10%", 'render': function (data, type, full, meta) {
+                        if (full.change > 0) {
+                            return '<span class="badge rounded-pill" style="background-color:#83BC32;">increase</span>';
+                        } else if (full.change < 0) {
+                            return '<span class="badge rounded-pill" style="background-color:#14A6EC;">decrease</span>';
+                        } else {
+                            return '<span class="badge rounded-pill" style="background-color:orange;">no change</span>';
+                        }
+                    }
+                },
+            ],
+            "processing": true,
+            "language": {
+                "paginate": {
+                    "first": "First Page",
+                    "last": "Last Page",
+                    "next": "<i class='far fa-chevron-right'></i>",
+                    "previous": "<i class='far fa-chevron-left'></i>",
+                },
+                "zeroRecords": "No matching records",
+                "info": "Items _START_ to _END_， _TOTAL_ in total.",
+                "search": "Search: ",
+                "processing": "Loading...",
+                "searchPlaceholder": "Search by Drugbank ID",
+            },
+            "ordering": false,
+            "searching": false,
+        });
+    }
+
+    $(document).ready(function () {
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}',}
+        });
+        set_datatable_data();
+        set_mmp_data();
+        $('#bar-graph > div').attr('style', 'margin:0 auto');
+    });
+</script>
