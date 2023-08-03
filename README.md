@@ -21,3 +21,24 @@ One of the great challenges in drug discovery is rationalizing lead optimization
 ![Figure 1](https://cadd.nscc-tj.cn/deploy/optadmet/static/home/img/tutorial_overview.png)
 
 Fig 1. The constitute of OptADMET webserver
+
+# Usage
+
+## 1. Create environment
+
+```
+conda create --name <env> --file requirements.txt
+```
+
+Important libraries supported in the environment include: 📢
+
+- Django == 2.2
+- DGL == 0.7.2
+- PyTorch == 1.6.0
+- RDKit == 2020.09.1.0
+- reportlab == 3.6.8
+- sqlparse == 0.4.1
+- scikit-learn == 1.0.1
+
+## 2. Download the necessary datasets
+

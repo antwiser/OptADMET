@@ -3,7 +3,14 @@
 *.ini
 *.ipynb
 uwsgi_params
-/static/files
+
+*.bin
+tmp*.csv
+tmp*.pdf
+tmp*.png
+tmp*.json
+/static/files/result/tmp/test.py
+
 datas
 /OptADMET/settings.py
 .vscode
